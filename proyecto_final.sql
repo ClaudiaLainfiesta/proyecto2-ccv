@@ -15,6 +15,7 @@ CREATE TABLE Equipo (
 	pais varchar(100),
 
 	codigo_grupo integer,
+	
 
 	PRIMARY KEY (pais),
 	FOREIGN KEY (codigo_grupo) REFERENCES Grupo(codigo_grupo)
@@ -61,6 +62,6 @@ CREATE TABLE Prediccion (
 	puntos_prediccion integer,
 
 	PRIMARY KEY (codigo_partido, username),
-	FOREIGN KEY (codigo_partido) REFERENCES Partido(codigo_partido) ON DELETE CASCADE,
-	FOREIGN KEY (username) REFERENCES Usuario(username) ON DELETE CASCADE
+	FOREIGN KEY (codigo_partido) REFERENCES Partido(codigo_partido),
+	FOREIGN KEY (username) REFERENCES Usuario(username)
 );
