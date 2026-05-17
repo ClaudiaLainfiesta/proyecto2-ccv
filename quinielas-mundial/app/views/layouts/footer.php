@@ -1,3 +1,8 @@
+<?php
+require_once __DIR__ . '/../../helpers/auth.php';
+$esAdminFooter = esAdmin();
+?>
+
 <footer class="mt-20 border-t border-white/10 bg-black/40 backdrop-blur-md">
 
   <div class="max-w-7xl mx-auto px-6 py-10">
@@ -5,36 +10,28 @@
     <div class="grid grid-cols-1 md:grid-cols-3 gap-10">
 
       <!-- BRAND -->
-      <div>
+      <div class="flex items-center gap-3">
+                <a href="index.php"
+                    class="p-1 rounded-2xl flex items-center justify-center h-11 w-11
+                        shadow-lg shadow-amber-500/20 hover:scale-105 active:scale-95
+                        transition-all duration-200">
+                    <img src="assets/img/copa26.jpeg" alt="Logo Quiniela-Copa" class="h-full w-full object-contain">
+                </a>
 
-        <div class="flex items-center gap-3">
+                <!-- Texto al lado del logo -->
+                <div class="hidden sm:block">
+                    <a href="index.php"
+                        class="font-extrabold text-lg tracking-tight
+                            bg-gradient-to-r from-yellow-600 via-amber-400 to-yellow-500
+                            bg-clip-text text-transparent">
+                        Quiniela Mundial 2026
+                    </a>
 
-          <div class="bg-gradient-to-br from-yellow-600 via-amber-400 to-yellow-500
-                      h-11 w-11 rounded-2xl
-                      flex items-center justify-center
-                      text-slate-950 font-black text-xl
-                      shadow-lg shadow-amber-500/20">
-
-            Q
-          </div>
-
-          <div>
-            <h3 class="font-black text-xl tracking-tight
-                       bg-gradient-to-r from-yellow-600 via-amber-400 to-yellow-500
-                       bg-clip-text text-transparent">
-
-              Quiniela Mundial 2026
-            </h3>
-
-            <p class="text-xs uppercase tracking-widest text-slate-500">
-              FIFA World Cup
-            </p>
-          </div>
-
-        </div>
-
-
-      </div>
+                    <p class="text-[11px] text-slate-500 tracking-widest font-bold uppercase">
+                        FIFA World Cup
+                    </p>
+                </div>
+            </div>
 
       <!-- NAVEGACIÓN -->
       <div>
@@ -55,10 +52,12 @@
             Calendario
           </a>
 
-          <a href="predicciones.php"
-             class="text-slate-400 hover:text-amber-400 transition-colors">
-            Mis Predicciones
-          </a>
+          <?php if (!$esAdminFooter): ?>
+            <a href="predicciones.php"
+               class="text-slate-400 hover:text-amber-400 transition-colors">
+              Mis Predicciones
+            </a>
+          <?php endif; ?>
 
           <a href="ranking.php"
              class="text-slate-400 hover:text-amber-400 transition-colors">
@@ -88,7 +87,6 @@
             </p>
           </div>
 
-          
         </div>
 
       </div>
@@ -101,8 +99,6 @@
       <p class="text-xs text-slate-500 text-center md:text-left">
         © <?php echo date('Y'); ?> Quiniela Mundial 2026. Todos los derechos reservados.
       </p>
-
-      
 
     </div>
 

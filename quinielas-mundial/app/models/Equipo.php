@@ -15,7 +15,8 @@ class Equipo {
         $sql = "
             SELECT 
                 e.pais,
-                e.codigo_grupo
+                e.codigo_grupo,
+                e.bandera
             FROM Equipo e
             ORDER BY e.codigo_grupo ASC, e.pais ASC
         ";

@@ -1,6 +1,7 @@
 <?php
 
 require_once __DIR__ . '/../config/database.php';
+require_once __DIR__ . '/../helpers/validarFechas.php';
 
 class Quiniela {
 
@@ -11,7 +12,48 @@ class Quiniela {
         $this->pdo = $db->conectar();
     }
 
-    public function obtenerPartidosParaPrediccion($username) {
+    public function obtenerPartidosParaPrediccion($username, $codigoPartido = null) {
+        $puedeVaticinarSql = sqlPuedeVaticinar('p');
+
+        if ($codigoPartido !== null) {
+            $sql = "
+                SELECT 
+                    p.codigo_partido,
+                    p.estadio,
+                    p.fecha,
+                    p.hora,
+                    p.nombre_fase,
+                    p.pais_local,
+                    p.pais_visitante,
+                    el.bandera AS bandera_local,
+                    ev.bandera AS bandera_visitante,
+                    p.goles_local_oficial,
+                    p.goles_visitante_oficial,
+                    pr.goles_local_prediccion,
+                    pr.goles_visitante_prediccion,
+                    pr.puntos_prediccion,
+                    {$puedeVaticinarSql} AS puede_vaticinar
+                FROM Partido p
+                LEFT JOIN Equipo el
+                    ON p.pais_local = el.pais
+                LEFT JOIN Equipo ev
+                    ON p.pais_visitante = ev.pais
+                LEFT JOIN Prediccion pr
+                    ON p.codigo_partido = pr.codigo_partido
+                    AND pr.username = :username
+                WHERE p.codigo_partido = :codigo_partido
+                ORDER BY p.fecha ASC, p.hora ASC
+            ";
+
+            $stmt = $this->pdo->prepare($sql);
+            $stmt->execute([
+                ':username' => $username,
+                ':codigo_partido' => $codigoPartido
+            ]);
+
+            return $stmt->fetchAll();
+        }
+
         $sql = "
             SELECT 
                 p.codigo_partido,
@@ -21,16 +63,22 @@ class Quiniela {
                 p.nombre_fase,
                 p.pais_local,
                 p.pais_visitante,
+                el.bandera AS bandera_local,
+                ev.bandera AS bandera_visitante,
+                p.goles_local_oficial,
+                p.goles_visitante_oficial,
                 pr.goles_local_prediccion,
-                pr.goles_visitante_prediccion
+                pr.goles_visitante_prediccion,
+                pr.puntos_prediccion,
+                {$puedeVaticinarSql} AS puede_vaticinar
             FROM Partido p
-            LEFT JOIN Prediccion pr
+            LEFT JOIN Equipo el
+                ON p.pais_local = el.pais
+            LEFT JOIN Equipo ev
+                ON p.pais_visitante = ev.pais
+            INNER JOIN Prediccion pr
                 ON p.codigo_partido = pr.codigo_partido
                 AND pr.username = :username
-            WHERE 
-                p.goles_local_oficial IS NULL
-                AND p.goles_visitante_oficial IS NULL
-                AND (p.fecha + p.hora) > NOW()
             ORDER BY p.fecha ASC, p.hora ASC
         ";
 
@@ -43,14 +91,13 @@ class Quiniela {
     }
 
     public function guardarPrediccion($codigoPartido, $username, $golesLocal, $golesVisitante) {
+        $partidoAbiertoSql = sqlPartidoAbiertoParaVaticinio();
+
         $sqlValidar = "
             SELECT codigo_partido
-            FROM Partido
-            WHERE 
-                codigo_partido = :codigo_partido
-                AND goles_local_oficial IS NULL
-                AND goles_visitante_oficial IS NULL
-                AND (fecha + hora) > NOW()
+            FROM Partido p
+            WHERE p.codigo_partido = :codigo_partido
+              AND {$partidoAbiertoSql}
         ";
 
         $stmtValidar = $this->pdo->prepare($sqlValidar);

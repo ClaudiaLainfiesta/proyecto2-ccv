@@ -6,7 +6,10 @@ if (!isset($_SESSION['usuario'])) {
     exit;
 }
 
+require_once __DIR__ . '/../app/helpers/auth.php';
+soloAdmin();
+
 require_once __DIR__ . '/../app/controllers/ReporteController.php';
 
 $controller = new ReporteController();
-$controller->posiciones();
+$controller->quinielas();

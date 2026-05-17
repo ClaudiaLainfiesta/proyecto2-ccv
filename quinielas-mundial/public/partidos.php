@@ -17,6 +17,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $controller->actualizarPartido();
     } elseif ($_POST['accion'] === 'eliminar') {
         $controller->eliminarPartido();
+    } elseif ($_POST['accion'] === 'generar_dieci') {
+        $controller->generarDieciseisavos();
+    } elseif ($_POST['accion'] === 'generar_siguiente') {
+        $controller->generarSiguienteFase();
     }
     exit;
 }

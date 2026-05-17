@@ -1,6 +1,7 @@
-<?php
+﻿<?php
 $equipos = $equipos ?? [];
 $grupos = $grupos ?? [];
+require_once __DIR__ . '/../../helpers/banderas.php';
 ?>
 
 <!DOCTYPE html>
@@ -127,6 +128,10 @@ $grupos = $grupos ?? [];
                     País
                   </label>
 
+                  <div class="mb-3 text-sm font-bold text-white">
+                    <?php echo equipoConBandera($equipo['pais'], $equipo['bandera']); ?>
+                  </div>
+
                   <input type="text" name="pais" required
                          value="<?php echo htmlspecialchars($equipo['pais']); ?>"
                          class="w-full bg-slate-950 border border-white/10 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-amber-400">
@@ -191,3 +196,4 @@ $grupos = $grupos ?? [];
 
 </body>
 </html>
+

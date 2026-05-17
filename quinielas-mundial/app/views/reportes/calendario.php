@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="es">
 <head>
   <meta charset="UTF-8">
@@ -8,6 +8,7 @@
 
 <body class="bg-slate-950 text-white min-h-screen">
 
+  <?php require_once __DIR__ . '/../../helpers/banderas.php'; ?>
   <?php require_once __DIR__ . '/../layouts/navbar.php'; ?>
 
   <main class="max-w-7xl mx-auto px-6 py-10">
@@ -38,8 +39,7 @@
           
         </div>
 
-        <div class="hidden sm:flex items-center gap-2 bg-amber-500/10 border border-amber-500/30 px-4 py-2 rounded-xl">
-          <span class="h-2 w-2 rounded-full bg-amber-400"></span>
+        <div class="hidden sm:flex items-center gap-2 bg-white/[0.04] border border-white/10 px-4 py-2 rounded-xl">
           <span class="text-sm font-bold text-amber-400">
             <?php echo count($partidos ?? []); ?> partidos
           </span>
@@ -57,6 +57,7 @@
               <th class="px-6 py-4 text-xs font-bold uppercase tracking-widest text-slate-400">Fase</th>
               <th class="px-6 py-4 text-xs font-bold uppercase tracking-widest text-slate-400">Estadio</th>
               <th class="px-6 py-4 text-xs font-bold uppercase tracking-widest text-slate-400">Resultado</th>
+              <th class="px-6 py-4 text-xs font-bold uppercase tracking-widest text-slate-400">Acción</th>
             </tr>
           </thead>
 
@@ -71,6 +72,7 @@
                   $resultadoVisitante = $partido['goles_visitante_oficial'];
 
                   $hayResultado = $resultadoLocal !== null && $resultadoVisitante !== null;
+                  $puedeVaticinar = !empty($partido['puede_vaticinar']);
                 ?>
 
                 <tr class="hover:bg-white/[0.04] transition-colors">
@@ -85,17 +87,25 @@
                   </td>
 
                   <td class="px-6 py-5 whitespace-nowrap">
-                    <span class="text-sm text-slate-300">
+                    <span class="text-sm font-bold text-white">
                       <?php echo date('H:i', strtotime($partido['hora'])); ?>
                     </span>
                   </td>
 
                   <td class="px-6 py-5">
-                    <div class="flex flex-col">
-                      <span class="text-base font-black text-white">
-                        <?php echo htmlspecialchars($partido['pais_local']); ?>
-                        <span class="mx-2 text-slate-500">vs</span>
-                        <?php echo htmlspecialchars($partido['pais_visitante']); ?>
+                    <div class="grid grid-cols-[minmax(0,1fr)_auto] items-center gap-4 min-w-64">
+                      <div class="space-y-2 text-base font-black text-white">
+                        <div class="leading-tight">
+                          <?php echo equipoConBandera($partido['pais_local'], $partido['bandera_local']); ?>
+                        </div>
+
+                        <div class="leading-tight">
+                          <?php echo equipoConBandera($partido['pais_visitante'], $partido['bandera_visitante']); ?>
+                        </div>
+                      </div>
+
+                      <span class="text-xs font-black tracking-widest text-slate-300">
+                        VS
                       </span>
                     </div>
                   </td>
@@ -106,7 +116,7 @@
                     </span>
                   </td>
 
-                  <td class="px-6 py-5 text-sm text-slate-400 min-w-56">
+                  <td class="px-6 py-5 text-sm text-white font-bold min-w-56">
                     <?php echo htmlspecialchars($partido['estadio']); ?>
                   </td>
 
@@ -123,6 +133,19 @@
                       </span>
                     <?php endif; ?>
                   </td>
+
+                  <td class="px-6 py-5 whitespace-nowrap">
+                    <?php if ($puedeVaticinar && !$esAdmin): ?>
+                      <a href="predicciones.php?partido=<?php echo urlencode($partido['codigo_partido']); ?>"
+                         class="inline-flex px-4 py-2 rounded-xl bg-gradient-to-r from-yellow-600 via-amber-500 to-yellow-500 text-slate-950 text-sm font-black shadow-lg shadow-amber-500/20 hover:scale-105 active:scale-95 transition-all">
+                        Vaticinar
+                      </a>
+                    <?php else: ?>
+                      <span class="inline-flex px-3 py-1 rounded-full bg-slate-800 border border-white/10 text-slate-500 text-xs font-bold">
+                        Cerrado
+                      </span>
+                    <?php endif; ?>
+                  </td>
                 </tr>
 
               <?php endforeach; ?>
@@ -130,7 +153,7 @@
             <?php else: ?>
 
               <tr>
-                <td colspan="7" class="px-6 py-12 text-center text-slate-400">
+                <td colspan="8" class="px-6 py-12 text-center text-slate-400">
                   No hay partidos registrados todavía.
                 </td>
               </tr>
@@ -148,3 +171,4 @@
 
 </body>
 </html>
+

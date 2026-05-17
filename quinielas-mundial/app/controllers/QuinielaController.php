@@ -13,9 +13,11 @@ class QuinielaController {
             $username = $usuarioSesion;
         }
 
+        $codigoPartido = $_GET['partido'] ?? null;
         $quinielaModel = new Quiniela();
 
-        $partidos = $quinielaModel->obtenerPartidosParaPrediccion($username);
+        $partidos = $quinielaModel->obtenerPartidosParaPrediccion($username, $codigoPartido);
+        $modoPartido = $codigoPartido !== null;
 
         require_once __DIR__ . '/../views/quinielas/ingresar.php';
     }

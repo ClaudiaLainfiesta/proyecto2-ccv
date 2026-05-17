@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="es">
 <head>
   <meta charset="UTF-8">
@@ -8,6 +8,7 @@
 
 <body class="bg-slate-950 text-white min-h-screen">
 
+  <?php require_once __DIR__ . '/../../helpers/banderas.php'; ?>
   <?php require_once __DIR__ . '/../layouts/navbar.php'; ?>
 
   <main class="max-w-7xl mx-auto px-6 py-10">
@@ -32,8 +33,16 @@
     <?php endif; ?>
 
     <?php if (isset($_GET['error'])): ?>
+      <?php
+        $mensajesError = [
+          'partido' => 'No se encontró el partido seleccionado.',
+          'goles' => 'Los goles oficiales deben ser números enteros mayores o iguales a cero.',
+          'bd' => 'No se pudo actualizar el resultado. Revisa los datos e intenta de nuevo.'
+        ];
+        $mensajeError = $mensajesError[$_GET['error']] ?? 'No se pudo actualizar el resultado. Revisa los datos.';
+      ?>
       <div class="mb-6 rounded-2xl border border-red-500/30 bg-red-500/10 px-5 py-4 text-red-400 font-bold">
-        No se pudo actualizar el resultado. Revisá los datos.
+        <?php echo htmlspecialchars($mensajeError); ?>
       </div>
     <?php endif; ?>
 
@@ -43,7 +52,7 @@
         <div>
           <h2 class="text-2xl font-black">Partidos registrados</h2>
           <p class="text-sm text-slate-400 mt-1">
-            Ingresá o quitá resultados oficiales sin mover la página horizontalmente.
+            Ingresa o quita resultados oficiales sin mover la página horizontalmente.
           </p>
         </div>
 
@@ -76,9 +85,9 @@
                   </p>
 
                   <h3 class="mt-2 text-xl font-black text-white">
-                    <?php echo htmlspecialchars($partido['pais_local']); ?>
+                    <?php echo equipoConBandera($partido['pais_local'], $partido['bandera_local']); ?>
                     <span class="mx-2 text-slate-500">vs</span>
-                    <?php echo htmlspecialchars($partido['pais_visitante']); ?>
+                    <?php echo equipoConBandera($partido['pais_visitante'], $partido['bandera_visitante']); ?>
                   </h3>
 
                   <p class="mt-1 text-xs text-slate-500">
@@ -123,7 +132,7 @@
 
                   <div class="bg-slate-950 border border-white/10 rounded-2xl p-3">
                     <label class="block text-xs font-bold text-slate-400 mb-2 truncate">
-                      <?php echo htmlspecialchars($partido['pais_local']); ?>
+                      <?php echo equipoConBandera($partido['pais_local'], $partido['bandera_local'], 'h-5 w-7'); ?>
                     </label>
 
                     <input
@@ -141,7 +150,7 @@
 
                   <div class="bg-slate-950 border border-white/10 rounded-2xl p-3">
                     <label class="block text-xs font-bold text-slate-400 mb-2 truncate">
-                      <?php echo htmlspecialchars($partido['pais_visitante']); ?>
+                      <?php echo equipoConBandera($partido['pais_visitante'], $partido['bandera_visitante'], 'h-5 w-7'); ?>
                     </label>
 
                     <input

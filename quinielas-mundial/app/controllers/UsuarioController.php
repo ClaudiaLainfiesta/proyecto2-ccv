@@ -1,4 +1,4 @@
-<?php
+﻿<?php
 
 session_start();
 
@@ -74,9 +74,21 @@ if ($accion === 'registro') {
         ':contrasena' => $passwordHash
     ]);
 
-    $_SESSION['success'] = "Cuenta creada correctamente";
+    /* =====================================================
+       CAMBIO AQUÍ: INICIAR SESIÓN AUTOMÁTICAMENTE
+    ===================================================== */
+    
+    // Almacenamos los datos en la sesión para que el sistema lo reconozca logueado
+    $_SESSION['usuario'] = [
+        'username' => $username,
+        'nombre' => $nombre
+    ];
 
-    header("Location: ../../public/login.php?panel=login");
+    // Opcional: Mensaje de bienvenida flotante que se mostrará al entrar al index
+    $_SESSION['success'] = "¡Cuenta creada con éxito! Bienvenido(a) " . htmlspecialchars($nombre);
+
+    // Redirección directa al index sin pasar por el login otra vez
+    header("Location: ../../public/index.php");
     exit;
 }
 

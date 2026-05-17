@@ -1,4 +1,4 @@
-<?php
+﻿<?php
 session_start();
 
 if (isset($_SESSION['usuario'])) {
@@ -19,6 +19,7 @@ if (isset($_SESSION['usuario'])) {
 
 <body class="min-h-screen flex items-center justify-center bg-[#0b1018] px-4">
 
+    <!-- ALERTAS DE ERROR -->
     <?php if (isset($_SESSION['error'])): ?>
         <div id="alertaError"
             class="fixed top-5 left-1/2 -translate-x-1/2 z-50
@@ -31,17 +32,11 @@ if (isset($_SESSION['usuario'])) {
         <?php unset($_SESSION['error']); ?>
     <?php endif; ?>
 
-    <?php if (isset($_SESSION['success'])): ?>
-        <div id="alertaSuccess"
-            class="fixed top-5 left-1/2 -translate-x-1/2 z-50
-         bg-green-500/95 backdrop-blur-md text-white px-6 py-4 rounded-2xl
-         shadow-2xl border border-green-300/20 transition-all duration-300">
-            <span class="text-sm font-semibold">
-                <?= $_SESSION['success'] ?>
-            </span>
-        </div>
-        <?php unset($_SESSION['success']); ?>
-    <?php endif; ?>
+    <!-- 
+      NOTA: El bloque de $_SESSION['success'] fue removido de aquí. 
+      Debes ponerlo en tu index.php para que muestre el mensaje de bienvenida 
+      al iniciar sesión automáticamente.
+    -->
 
     <div class="relative w-[880px] h-[560px] bg-white rounded-[30px] overflow-hidden shadow-2xl">
 
@@ -54,9 +49,9 @@ if (isset($_SESSION['usuario'])) {
         <!-- GRID PRINCIPAL -->
         <div class="grid grid-cols-2 h-full">
 
-            <!-- REGISTRO -->
+            <!-- REGISTRO (Se le añadió id="form-registro") -->
             <div class="flex items-center justify-center px-14">
-                <form action="../app/controllers/UsuarioController.php"
+                <form id="form-registro" action="../app/controllers/UsuarioController.php"
                     method="POST"
                     class="w-full max-w-[320px] flex flex-col gap-4">
 
@@ -94,9 +89,8 @@ if (isset($_SESSION['usuario'])) {
                             <button type="button"
                                 onclick="togglePassword('registerPassword', 'registerEye')"
                                 class="absolute right-4 top-1/2 -translate-y-1/2 text-gray-500 hover:text-black transition">
-
                                 <span id="registerEye">
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20"
                                         viewBox="0 0 24 24" fill="none" stroke="currentColor"
                                         stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
                                         class="lucide lucide-eye-off">
@@ -106,7 +100,6 @@ if (isset($_SESSION['usuario'])) {
                                         <path d="M10.58 10.58a2 2 0 0 0 2.83 2.83" />
                                     </svg>
                                 </span>
-
                             </button>
                         </div>
                     </div>
@@ -118,7 +111,6 @@ if (isset($_SESSION['usuario'])) {
                         </label>
 
                         <div class="relative">
-
                             <input type="password"
                                 id="confirmPassword"
                                 name="confirm_password"
@@ -128,9 +120,8 @@ if (isset($_SESSION['usuario'])) {
                             <button type="button"
                                 onclick="togglePassword('confirmPassword', 'confirmEye')"
                                 class="absolute right-4 top-1/2 -translate-y-1/2 text-gray-500 hover:text-black transition">
-
                                 <span id="confirmEye">
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20"
                                         viewBox="0 0 24 24" fill="none" stroke="currentColor"
                                         stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
                                         class="lucide lucide-eye-off">
@@ -140,7 +131,6 @@ if (isset($_SESSION['usuario'])) {
                                         <path d="M10.58 10.58a2 2 0 0 0 2.83 2.83" />
                                     </svg>
                                 </span>
-
                             </button>
                         </div>
 
@@ -150,6 +140,7 @@ if (isset($_SESSION['usuario'])) {
                             Las contraseñas no coinciden
                         </p>
                     </div>
+
                     <button
                         class="mt-3 w-full py-3 rounded-xl
                     bg-gradient-to-r from-[#c89b3c] via-[#f7d774] to-[#b8860b]
@@ -194,7 +185,7 @@ if (isset($_SESSION['usuario'])) {
                                 onclick="togglePassword('loginPassword', 'loginEye')"
                                 class="absolute right-4 top-1/2 -translate-y-1/2 text-gray-500 hover:text-black transition">
                                 <span id="loginEye">
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20"
                                         viewBox="0 0 24 24" fill="none" stroke="currentColor"
                                         stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
                                         class="lucide lucide-eye-off">
@@ -220,15 +211,15 @@ if (isset($_SESSION['usuario'])) {
         </div>
 
         <!-- PANEL ANIMADO -->
-        <div class="absolute top-0 left-0 w-1/2 h-full bg-black rounded-r-[100px]
+        <div class="absolute top-0 left-0 w-1/2 h-full bg-black rounded-r-[30px]
                 flex flex-col items-center justify-center gap-8 px-10 text-center text-white
                 transition-all duration-700
-                peer-checked:translate-x-full peer-checked:rounded-l-[100px] peer-checked:rounded-r-none">
+                peer-checked:translate-x-full peer-checked:rounded-l-[30px]">
 
             <img src="assets/img/copa26.jpeg" class="w-64 drop-shadow-2xl">
 
             <div class="space-y-3">
-                <h2 class="text-4xl font-bold">Quinielas Mundial</h2>
+                <h2 class="text-4xl font-bold">Quiniela Mundial</h2>
                 <p class="text-white/80 text-sm">Vive toda la pasión del Mundial 2026</p>
             </div>
 
@@ -243,7 +234,6 @@ if (isset($_SESSION['usuario'])) {
 
     <script>
         const alertaError = document.getElementById('alertaError');
-        const alertaSuccess = document.getElementById('alertaSuccess');
 
         function ocultarAlerta(alerta) {
             if (alerta) {
@@ -259,7 +249,6 @@ if (isset($_SESSION['usuario'])) {
         }
 
         ocultarAlerta(alertaError);
-        ocultarAlerta(alertaSuccess);
 
         const toggle = document.getElementById('toggle');
         const loginText = document.querySelector('.login-text');
@@ -313,33 +302,26 @@ if (isset($_SESSION['usuario'])) {
             }
         }
 
-        const registerForm = document.querySelector('form[action="../app/controllers/UsuarioController.php"]');
+        /* CAMBIO AQUÍ: Ahora se selecciona de forma segura por ID */
+        const registerForm = document.getElementById('form-registro');
 
         const passwordInput = document.getElementById('registerPassword');
         const confirmInput = document.getElementById('confirmPassword');
         const passwordError = document.getElementById('passwordError');
 
         function validarPasswords() {
-
             if (confirmInput.value === '') {
                 passwordError.classList.add('hidden');
-
                 confirmInput.classList.remove('ring-2', 'ring-red-500');
                 return;
             }
 
             if (passwordInput.value !== confirmInput.value) {
-
                 passwordError.classList.remove('hidden');
-
                 confirmInput.classList.add('ring-2', 'ring-red-500');
-
             } else {
-
                 passwordError.classList.add('hidden');
-
                 confirmInput.classList.remove('ring-2', 'ring-red-500');
-
             }
         }
 
@@ -347,16 +329,11 @@ if (isset($_SESSION['usuario'])) {
         confirmInput.addEventListener('input', validarPasswords);
 
         registerForm.addEventListener('submit', function(e) {
-
             if (passwordInput.value !== confirmInput.value) {
-
                 e.preventDefault();
-
                 passwordError.classList.remove('hidden');
-
                 confirmInput.classList.add('ring-2', 'ring-red-500');
             }
-
         });
     </script>
 </body>

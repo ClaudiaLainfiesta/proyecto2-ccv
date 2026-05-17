@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="es">
 
 <head>
@@ -9,19 +9,20 @@
 
 <body class="bg-slate-950 text-white min-h-screen">
 
+  <?php require_once __DIR__ . '/../../helpers/banderas.php'; ?>
   <?php require_once __DIR__ . '/../layouts/navbar.php'; ?>
 
   <main class="max-w-7xl mx-auto px-6 py-10">
 
     <section class="mb-10">
       <p class="text-amber-400 font-semibold text-sm uppercase tracking-[0.25em]">
-        Mis predicciones
+        <?php echo !empty($modoPartido) ? 'Vaticinar partido' : 'Mis predicciones'; ?>
       </p>
 
       <h1 class="mt-3 text-4xl md:text-5xl font-black tracking-tight">
-        Ingresar
+        <?php echo !empty($modoPartido) ? 'Ingresar' : 'Mis'; ?>
         <span class="bg-gradient-to-r from-yellow-600 via-amber-400 to-yellow-500 bg-clip-text text-transparent">
-          Quiniela
+          Predicciones
         </span>
       </h1>
 
@@ -45,6 +46,12 @@
 
         <?php foreach ($partidos as $partido): ?>
 
+          <?php
+            $puedeVaticinar = !empty($partido['puede_vaticinar']);
+            $tienePrediccion = $partido['goles_local_prediccion'] !== null && $partido['goles_visitante_prediccion'] !== null;
+            $hayResultado = $partido['goles_local_oficial'] !== null && $partido['goles_visitante_oficial'] !== null;
+          ?>
+
           <article class="bg-white/[0.03] border border-white/10 rounded-3xl p-6 shadow-xl shadow-black/20 hover:bg-white/[0.05] transition-all">
 
             <form action="predicciones.php" method="POST" class="grid grid-cols-1 lg:grid-cols-[1fr_auto] gap-6 items-center">
@@ -57,9 +64,9 @@
                 </p>
 
                 <h2 class="mt-3 text-2xl font-black text-white">
-                  <?php echo htmlspecialchars($partido['pais_local']); ?>
+                  <?php echo equipoConBandera($partido['pais_local'], $partido['bandera_local']); ?>
                   <span class="mx-3 text-slate-500 text-lg">vs</span>
-                  <?php echo htmlspecialchars($partido['pais_visitante']); ?>
+                  <?php echo equipoConBandera($partido['pais_visitante'], $partido['bandera_visitante']); ?>
                 </h2>
 
                 <p class="mt-2 text-sm text-slate-400">
@@ -74,6 +81,16 @@
                   <span class="px-3 py-1 rounded-full bg-white/5 border border-white/10 text-slate-300">
                     <?php echo date('H:i', strtotime($partido['hora'])); ?>
                   </span>
+
+                  <?php if ($hayResultado): ?>
+                    <span class="px-3 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 font-bold">
+                      Resultado: <?php echo htmlspecialchars($partido['goles_local_oficial']); ?> - <?php echo htmlspecialchars($partido['goles_visitante_oficial']); ?>
+                    </span>
+                  <?php elseif (!$puedeVaticinar && $tienePrediccion): ?>
+                    <span class="px-3 py-1 rounded-full bg-slate-800 border border-white/10 text-slate-400 font-bold">
+                      Vaticinio cerrado
+                    </span>
+                  <?php endif; ?>
                 </div>
               </div>
 
@@ -81,7 +98,7 @@
 
                 <div class="flex items-center gap-3 bg-black/30 border border-white/10 rounded-2xl px-4 py-3">
                   <span class="text-sm font-bold text-slate-300">
-                    <?php echo htmlspecialchars($partido['pais_local']); ?>
+                    <?php echo equipoConBandera($partido['pais_local'], $partido['bandera_local'], 'h-5 w-7'); ?>
                   </span>
 
                   <input
@@ -89,6 +106,7 @@
                     name="goles_local"
                     min="0"
                     required
+                    <?php echo $puedeVaticinar ? '' : 'readonly'; ?>
                     value="<?php echo htmlspecialchars($partido['goles_local_prediccion'] ?? ''); ?>"
                     class="w-16 bg-slate-950 border border-white/10 rounded-xl px-3 py-2 text-center text-white font-black focus:outline-none focus:border-amber-400">
                 </div>
@@ -103,23 +121,30 @@
                     name="goles_visitante"
                     min="0"
                     required
+                    <?php echo $puedeVaticinar ? '' : 'readonly'; ?>
                     value="<?php echo htmlspecialchars($partido['goles_visitante_prediccion'] ?? ''); ?>"
                     class="w-16 bg-slate-950 border border-white/10 rounded-xl px-3 py-2 text-center text-white font-black focus:outline-none focus:border-amber-400">
 
                   <span class="text-sm font-bold text-slate-300">
-                    <?php echo htmlspecialchars($partido['pais_visitante']); ?>
+                    <?php echo equipoConBandera($partido['pais_visitante'], $partido['bandera_visitante'], 'h-5 w-7'); ?>
                   </span>
                 </div>
 
-                <button type="submit"
-                  class="px-5 py-3 rounded-2xl
-                               bg-gradient-to-r from-yellow-600 via-amber-500 to-yellow-500
-                               text-slate-950 font-black
-                               shadow-lg shadow-amber-500/20
-                               hover:scale-105 active:scale-95
-                               transition-all">
-                  Guardar
-                </button>
+                <?php if ($puedeVaticinar): ?>
+                  <button type="submit"
+                    class="px-5 py-3 rounded-2xl
+                                 bg-gradient-to-r from-yellow-600 via-amber-500 to-yellow-500
+                                 text-slate-950 font-black
+                                 shadow-lg shadow-amber-500/20
+                                 hover:scale-105 active:scale-95
+                                 transition-all">
+                    Guardar
+                  </button>
+                <?php else: ?>
+                  <span class="px-5 py-3 rounded-2xl bg-slate-800 border border-white/10 text-slate-400 font-black text-center">
+                    <?php echo $hayResultado ? htmlspecialchars($partido['puntos_prediccion'] ?? 0) . ' pts' : 'Cerrado'; ?>
+                  </span>
+                <?php endif; ?>
 
               </div>
 
@@ -133,8 +158,19 @@
 
         <div class="bg-white/[0.03] border border-white/10 rounded-3xl p-10 text-center">
           <p class="text-slate-400">
-            No hay partidos disponibles para predicción en este momento.
+            <?php if (!empty($modoPartido)): ?>
+              No se encontró el partido solicitado.
+            <?php else: ?>
+              Todavía no has guardado predicciones.
+            <?php endif; ?>
           </p>
+
+          <?php if (empty($modoPartido)): ?>
+            <a href="calendario.php"
+               class="inline-flex mt-5 px-5 py-3 rounded-xl bg-gradient-to-r from-yellow-600 via-amber-500 to-yellow-500 text-slate-950 font-black shadow-lg shadow-amber-500/20 hover:scale-105 active:scale-95 transition-all">
+              Ir al calendario
+            </a>
+          <?php endif; ?>
         </div>
 
       <?php endif; ?>
@@ -142,8 +178,10 @@
     </section>
 
   </main>
-    <?php require_once __DIR__ . '/../layouts/footer.php'; ?>
+
+  <?php require_once __DIR__ . '/../layouts/footer.php'; ?>
 
 </body>
 
 </html>
+

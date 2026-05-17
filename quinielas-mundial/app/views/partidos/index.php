@@ -1,7 +1,19 @@
-<?php
+﻿<?php
 $partidos = $partidos ?? [];
 $equipos = $equipos ?? [];
 $fases = $fases ?? [];
+require_once __DIR__ . '/../../helpers/banderas.php';
+
+$mensajesError = [
+  'codigo' => 'El código del partido debe ser un número entero positivo.',
+  'datos' => 'Todos los campos del partido son obligatorios.',
+  'paises' => 'Un equipo no puede jugar contra sí mismo.',
+  'fecha' => 'La fecha u hora del partido no es válida.',
+  'duplicado' => 'Ya existe un partido con ese código.',
+  'referencia' => 'La fase o alguno de los equipos seleccionados no existe.',
+  'relacionado' => 'No se pudo eliminar el partido porque tiene datos relacionados.',
+  'bd' => 'No se pudo guardar el partido. Revisa los datos e intenta de nuevo.'
+];
 ?>
 <!DOCTYPE html>
 <html lang="es">
@@ -37,6 +49,60 @@ $fases = $fases ?? [];
         Operación realizada correctamente.
       </div>
     <?php endif; ?>
+
+    <?php if (isset($_GET['error'])): ?>
+      <?php
+        $error = $_GET['error'];
+        $mensajeError = $mensajesError[$error] ?? $error;
+      ?>
+      <div class="mb-6 rounded-2xl border border-red-500/30 bg-red-500/10 px-5 py-4 text-red-400 font-bold">
+        <?php echo htmlspecialchars($mensajeError); ?>
+      </div>
+    <?php endif; ?>
+
+    <section class="mb-10 grid grid-cols-1 md:grid-cols-2 gap-4">
+      <form action="partidos.php" method="POST" class="bg-white/[0.03] border border-white/10 rounded-3xl p-5 shadow-xl shadow-black/20">
+        <input type="hidden" name="accion" value="generar_dieci">
+
+        <p class="text-sm text-amber-400 font-bold uppercase tracking-widest">
+          Eliminatorias
+        </p>
+
+        <h2 class="mt-2 text-2xl font-black text-white">
+          Generar dieciseisavos
+        </h2>
+
+        <p class="mt-2 text-sm text-slate-400">
+          Usa la tabla de grupos completa para clasificar a 32 equipos.
+        </p>
+
+        <button type="submit"
+                class="mt-5 px-5 py-3 rounded-xl bg-gradient-to-r from-yellow-600 via-amber-500 to-yellow-500 text-slate-950 font-black shadow-lg shadow-amber-500/20 hover:scale-105 active:scale-95 transition-all">
+          Generar
+        </button>
+      </form>
+
+      <form action="partidos.php" method="POST" class="bg-white/[0.03] border border-white/10 rounded-3xl p-5 shadow-xl shadow-black/20">
+        <input type="hidden" name="accion" value="generar_siguiente">
+
+        <p class="text-sm text-amber-400 font-bold uppercase tracking-widest">
+          Avance automático
+        </p>
+
+        <h2 class="mt-2 text-2xl font-black text-white">
+          Generar siguiente fase
+        </h2>
+
+        <p class="mt-2 text-sm text-slate-400">
+          Toma los ganadores de la última fase eliminatoria completa.
+        </p>
+
+        <button type="submit"
+                class="mt-5 px-5 py-3 rounded-xl bg-white/5 border border-white/10 text-white font-black hover:bg-white/10 transition-all">
+          Avanzar fase
+        </button>
+      </form>
+    </section>
 
     <!-- CREAR PARTIDO -->
     <section class="mb-10 bg-white/[0.03] border border-white/10 rounded-3xl p-6 shadow-xl shadow-black/20">
@@ -169,6 +235,12 @@ $fases = $fases ?? [];
 
               <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
 
+                <div class="md:col-span-2 lg:col-span-4 text-lg font-black text-white">
+                  <?php echo equipoConBandera($partido['pais_local'], $partido['bandera_local']); ?>
+                  <span class="mx-2 text-slate-500">vs</span>
+                  <?php echo equipoConBandera($partido['pais_visitante'], $partido['bandera_visitante']); ?>
+                </div>
+
                 <div>
                   <label class="block text-xs text-slate-500 font-bold mb-2 uppercase tracking-widest">
                     Partido
@@ -295,3 +367,4 @@ $fases = $fases ?? [];
 
 </body>
 </html>
+
