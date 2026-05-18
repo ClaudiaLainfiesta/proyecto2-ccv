@@ -32,7 +32,7 @@ $puntos = $puntos ?? 0;
                 </p>
 
                 <h1 class="mt-3 text-4xl md:text-5xl font-black tracking-tight">
-                    Bienvenido,
+                    Hola,
                     <span class="bg-gradient-to-r from-yellow-600 via-amber-400 to-yellow-500 bg-clip-text text-transparent">
                         <?php echo htmlspecialchars($nombre); ?>
                     </span>
@@ -216,7 +216,7 @@ $puntos = $puntos ?? 0;
                     </p>
 
                     <h1 class="mt-4 text-4xl md:text-5xl font-black tracking-tight leading-tight">
-                        Bienvenido,
+                        Hola,
                         <span class="bg-gradient-to-r from-yellow-600 via-amber-400 to-yellow-500 bg-clip-text text-transparent">
                             <?php echo htmlspecialchars($nombre); ?>
                         </span>

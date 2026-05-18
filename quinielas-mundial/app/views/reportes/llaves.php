@@ -15,6 +15,46 @@ foreach ($partidosLlaves as $partido) {
   $partidosPorFase[$partido['nombre_fase']][] = $partido;
 }
 
+function ordenarPartidosLlavePorCodigo($partidos, $ordenCodigos) {
+  $partidos = $partidos ?? [];
+  $ordenados = [];
+  $porCodigo = [];
+  $codigosOrdenados = [];
+
+  foreach ($partidos as $partido) {
+    $codigo = (int)$partido['codigo_partido'];
+    $porCodigo[$codigo] = $partido;
+  }
+
+  foreach ($ordenCodigos as $codigo) {
+    if (isset($porCodigo[$codigo])) {
+      $codigosOrdenados[$codigo] = true;
+      $ordenados[] = $porCodigo[$codigo];
+    }
+  }
+
+  foreach ($partidos as $partido) {
+    $codigo = (int)$partido['codigo_partido'];
+    if (!isset($codigosOrdenados[$codigo])) {
+      $ordenados[] = $partido;
+    }
+  }
+
+  return $ordenados;
+}
+
+$ordenVisualLlaves = [
+  'Dieciseisavos de Final' => [74, 77, 73, 75, 83, 84, 81, 82, 76, 78, 79, 80, 86, 88, 85, 87],
+  'Octavos de Final'       => [89, 90, 93, 94, 91, 92, 95, 96],
+  'Cuartos de Final'       => [97, 98, 99, 100],
+  'Semifinales'            => [101, 102],
+  'Final'                  => [104],
+];
+
+foreach ($ordenVisualLlaves as $fase => $ordenCodigos) {
+  $partidosPorFase[$fase] = ordenarPartidosLlavePorCodigo($partidosPorFase[$fase] ?? [], $ordenCodigos);
+}
+
 function ganadorPartidoLlave($partido) {
   if (
     empty($partido) ||
@@ -101,7 +141,14 @@ function partidosMitadLlave($partidos, $total, $lado) {
   return array_pad(array_slice($partidos, $mitad, $mitad), $mitad, null);
 }
 
-$final          = $partidosPorFase['Final'][0] ?? null;
+$final          = null;
+foreach ($partidosPorFase['Final'] ?? [] as $partidoFinal) {
+  if ((int)$partidoFinal['codigo_partido'] === 104) {
+    $final = $partidoFinal;
+    break;
+  }
+}
+$final          = $final ?? ($partidosPorFase['Final'][0] ?? null);
 $tercerLugar    = $partidosPorFase['Tercer Lugar'][0] ?? null;
 $campeon        = ganadorPartidoLlave($final);
 $banderaCampeon = '';
@@ -256,7 +303,7 @@ if ($campeon !== null && !empty($final)) {
                 <?php if ($banderaCampeon !== ''): ?>
                   <img src="<?php echo htmlspecialchars($banderaCampeon); ?>" alt="Campeon" class="bracket-trophy-flag">
                 <?php else: ?>
-                  🏆
+                  
                 <?php endif; ?>
               </div>
               <p class="bracket-trophy-country text-xs font-black uppercase mt-1">
