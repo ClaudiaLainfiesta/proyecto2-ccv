@@ -145,9 +145,21 @@ main [class*="divide-y"] > * + * {
 }
 
 main [class*="hover:bg-white"]:hover,
-main tr:hover,
+main tbody tr:hover,
 main a.block:hover {
-    background-color: #EEE8D8 !important;
+    background-color: var(--color-oro) !important;
+}
+
+main section > div[class*="border-b"][class*="flex"][class*="justify-between"],
+main section > div[class*="border-b"][class*="flex"][class*="justify-between"]:hover {
+    background-color: var(--color-oro) !important;
+    border-color: var(--color-oro-oscuro) !important;
+}
+
+main section > div[class*="border-b"][class*="flex"][class*="justify-between"] h2,
+main section > div[class*="border-b"][class*="flex"][class*="justify-between"] p,
+main section > div[class*="border-b"][class*="flex"][class*="justify-between"] span {
+    color: var(--color-negro) !important;
 }
 
 main table {
@@ -158,8 +170,13 @@ main table {
 }
 
 main thead,
-main thead[class*="bg-black"] {
-    background: var(--color-oro) !important;
+main thead[class*="bg-black"],
+main thead tr,
+main thead tr:hover,
+main thead th,
+main thead th:hover,
+main thead [class*="hover:bg-white"]:hover {
+    background-color: var(--color-oro) !important;
     border-color: var(--color-oro-oscuro) !important;
 }
 
