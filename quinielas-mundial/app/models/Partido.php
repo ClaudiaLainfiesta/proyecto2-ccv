@@ -159,7 +159,8 @@ class Partido
                     WHEN 'Octavos de Final' THEN 3
                     WHEN 'Cuartos de Final' THEN 4
                     WHEN 'Semifinales' THEN 5
-                    WHEN 'Final' THEN 6
+                    WHEN 'Tercer Lugar' THEN 6
+                    WHEN 'Final' THEN 7
                     ELSE 99
                 END,
                 nombre_fase ASC
@@ -197,6 +198,7 @@ class Partido
             'Octavos de Final',
             'Cuartos de Final',
             'Semifinales',
+            'Tercer Lugar',
             'Final'
         ];
 
@@ -332,8 +334,20 @@ class Partido
             }
 
             $ganadores = $this->obtenerGanadoresFase($faseActual);
+            $perdedores = [];
+
+            if ($datos['siguiente'] === 'Final') {
+                $perdedores = $this->obtenerPerdedoresFase($faseActual);
+            }
 
             if (count($ganadores) < ($datos['partidos'] * 2)) {
+                return [
+                    'ok' => false,
+                    'mensaje' => 'Aún faltan resultados o desempates en ' . $faseActual . '.'
+                ];
+            }
+
+            if ($datos['siguiente'] === 'Final' && count($perdedores) < 2) {
                 return [
                     'ok' => false,
                     'mensaje' => 'Aún faltan resultados o desempates en ' . $faseActual . '.'
@@ -362,6 +376,18 @@ class Partido
                         $datos['siguiente'],
                         $local,
                         $visitante
+                    );
+                }
+
+                if ($datos['siguiente'] === 'Final' && !$this->existenPartidosFase('Tercer Lugar')) {
+                    $this->insertarPartidoGenerado(
+                        $codigo++,
+                        'Por definir',
+                        $fechaBase,
+                        '11:00:00',
+                        'Tercer Lugar',
+                        $perdedores[0]['pais_perdedor'],
+                        $perdedores[1]['pais_perdedor']
                     );
                 }
 
@@ -530,6 +556,35 @@ class Partido
 
         return array_values(array_filter($ganadores, function ($ganador) {
             return !empty($ganador['pais_ganador']);
+        }));
+    }
+
+    private function obtenerPerdedoresFase($nombreFase)
+    {
+        $sql = "
+            SELECT
+                codigo_partido,
+                CASE
+                    WHEN goles_local_oficial > goles_visitante_oficial THEN pais_visitante
+                    WHEN goles_visitante_oficial > goles_local_oficial THEN pais_local
+                    ELSE NULL
+                END AS pais_perdedor
+            FROM Partido
+            WHERE nombre_fase = :nombre_fase
+              AND goles_local_oficial IS NOT NULL
+              AND goles_visitante_oficial IS NOT NULL
+            ORDER BY codigo_partido ASC
+        ";
+
+        $stmt = $this->pdo->prepare($sql);
+        $stmt->execute([
+            ':nombre_fase' => $nombreFase
+        ]);
+
+        $perdedores = $stmt->fetchAll();
+
+        return array_values(array_filter($perdedores, function ($perdedor) {
+            return !empty($perdedor['pais_perdedor']);
         }));
     }
 
