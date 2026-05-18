@@ -235,6 +235,23 @@ class Partido
         return (int) ($fila['total'] ?? 0) > 0;
     }
 
+    public function existePartido($codigoPartido)
+    {
+        $sql = "
+            SELECT 1
+            FROM Partido
+            WHERE codigo_partido = :codigo_partido
+            LIMIT 1
+        ";
+
+        $stmt = $this->pdo->prepare($sql);
+        $stmt->execute([
+            ':codigo_partido' => $codigoPartido
+        ]);
+
+        return (bool) $stmt->fetchColumn();
+    }
+
     public function obtenerSiguienteCodigoPartido()
     {
         $sql = "
@@ -265,12 +282,21 @@ class Partido
             ];
         }
 
-        $clasificados = $this->obtenerClasificadosDieciseisavos();
+        $clasificados = $this->obtenerClasificadosPorPosicion();
 
-        if (count($clasificados) < 32) {
+        if (count($clasificados['primeros']) < 12 || count($clasificados['segundos']) < 12 || count($clasificados['terceros']) < 8) {
             return [
                 'ok' => false,
                 'mensaje' => 'La fase de grupos aún no tiene suficientes resultados para generar 32 clasificados.'
+            ];
+        }
+
+        $tercerosAsignados = $this->asignarMejoresTerceros($clasificados['terceros']);
+
+        if ($tercerosAsignados === null) {
+            return [
+                'ok' => false,
+                'mensaje' => 'No se pudo acomodar a los mejores terceros en las reglas de dieciseisavos.'
             ];
         }
 
@@ -279,20 +305,19 @@ class Partido
         $this->pdo->beginTransaction();
 
         try {
-            $codigo = $this->obtenerSiguienteCodigoPartido();
-            $fechaBase = $this->obtenerFechaDespuesDeFase('Fase de Grupos');
+            foreach ($this->calendarioDieciseisavos() as $codigo => $partido) {
+                $local = $this->resolverClasificado($partido['local'], $clasificados, $tercerosAsignados);
+                $visitante = $this->resolverClasificado($partido['visitante'], $clasificados, $tercerosAsignados);
 
-            for ($i = 0; $i < 16; $i++) {
-                $local = $clasificados[$i]['pais'];
-                $visitante = $clasificados[31 - $i]['pais'];
-                $fecha = date('Y-m-d', strtotime($fechaBase . ' +' . intdiv($i, 4) . ' days'));
-                $hora = sprintf('%02d:00:00', 12 + (($i % 4) * 3));
+                if ($local === null || $visitante === null) {
+                    throw new RuntimeException('Clasificado no encontrado para el partido ' . $codigo);
+                }
 
                 $this->insertarPartidoGenerado(
-                    $codigo++,
-                    'Por definir',
-                    $fecha,
-                    $hora,
+                    $codigo,
+                    $partido['estadio'],
+                    $partido['fecha'],
+                    $partido['hora'],
                     'Dieciseisavos de Final',
                     $local,
                     $visitante
@@ -317,41 +342,33 @@ class Partido
 
     public function generarSiguienteFase()
     {
-        $flujo = [
-            'Dieciseisavos de Final' => ['siguiente' => 'Octavos de Final', 'partidos' => 8],
-            'Octavos de Final' => ['siguiente' => 'Cuartos de Final', 'partidos' => 4],
-            'Cuartos de Final' => ['siguiente' => 'Semifinales', 'partidos' => 2],
-            'Semifinales' => ['siguiente' => 'Final', 'partidos' => 1]
-        ];
+        foreach ($this->calendarioFasesEliminatorias() as $faseActual => $partidos) {
+            $partidosYaGenerados = true;
 
-        foreach ($flujo as $faseActual => $datos) {
-            if (!$this->existenPartidosFase($faseActual)) {
+            foreach (array_keys($partidos) as $codigoPartido) {
+                if (!$this->existePartido($codigoPartido)) {
+                    $partidosYaGenerados = false;
+                    break;
+                }
+            }
+
+            if (!$this->existenPartidosFase($faseActual) || $partidosYaGenerados) {
                 continue;
             }
 
-            if ($this->existenPartidosFase($datos['siguiente'])) {
-                continue;
-            }
+            foreach ($partidos as $partido) {
+                foreach (['local', 'visitante'] as $lado) {
+                    $equipo = ($partido[$lado]['tipo'] === 'ganador')
+                        ? $this->obtenerGanadorPartido($partido[$lado]['partido'])
+                        : $this->obtenerPerdedorPartido($partido[$lado]['partido']);
 
-            $ganadores = $this->obtenerGanadoresFase($faseActual);
-            $perdedores = [];
-
-            if ($datos['siguiente'] === 'Final') {
-                $perdedores = $this->obtenerPerdedoresFase($faseActual);
-            }
-
-            if (count($ganadores) < ($datos['partidos'] * 2)) {
-                return [
-                    'ok' => false,
-                    'mensaje' => 'Aún faltan resultados o desempates en ' . $faseActual . '.'
-                ];
-            }
-
-            if ($datos['siguiente'] === 'Final' && count($perdedores) < 2) {
-                return [
-                    'ok' => false,
-                    'mensaje' => 'Aún faltan resultados o desempates en ' . $faseActual . '.'
-                ];
+                    if ($equipo === null) {
+                        return [
+                            'ok' => false,
+                            'mensaje' => 'Aún faltan resultados o desempates en ' . $faseActual . '.'
+                        ];
+                    }
+                }
             }
 
             $this->crearFasesEliminatorias();
@@ -359,35 +376,26 @@ class Partido
             $this->pdo->beginTransaction();
 
             try {
-                $codigo = $this->obtenerSiguienteCodigoPartido();
-                $fechaBase = $this->obtenerFechaDespuesDeFase($faseActual);
+                foreach ($partidos as $codigo => $partido) {
+                    if ($this->existePartido($codigo)) {
+                        continue;
+                    }
 
-                for ($i = 0; $i < $datos['partidos']; $i++) {
-                    $local = $ganadores[$i * 2]['pais_ganador'];
-                    $visitante = $ganadores[($i * 2) + 1]['pais_ganador'];
-                    $fecha = date('Y-m-d', strtotime($fechaBase . ' +' . intdiv($i, 2) . ' days'));
-                    $hora = sprintf('%02d:00:00', 15 + (($i % 2) * 4));
+                    $local = ($partido['local']['tipo'] === 'ganador')
+                        ? $this->obtenerGanadorPartido($partido['local']['partido'])
+                        : $this->obtenerPerdedorPartido($partido['local']['partido']);
+                    $visitante = ($partido['visitante']['tipo'] === 'ganador')
+                        ? $this->obtenerGanadorPartido($partido['visitante']['partido'])
+                        : $this->obtenerPerdedorPartido($partido['visitante']['partido']);
 
                     $this->insertarPartidoGenerado(
-                        $codigo++,
-                        'Por definir',
-                        $fecha,
-                        $hora,
-                        $datos['siguiente'],
+                        $codigo,
+                        $partido['estadio'],
+                        $partido['fecha'],
+                        $partido['hora'],
+                        $partido['fase'],
                         $local,
                         $visitante
-                    );
-                }
-
-                if ($datos['siguiente'] === 'Final' && !$this->existenPartidosFase('Tercer Lugar')) {
-                    $this->insertarPartidoGenerado(
-                        $codigo++,
-                        'Por definir',
-                        $fechaBase,
-                        '11:00:00',
-                        'Tercer Lugar',
-                        $perdedores[0]['pais_perdedor'],
-                        $perdedores[1]['pais_perdedor']
                     );
                 }
 
@@ -395,7 +403,7 @@ class Partido
 
                 return [
                     'ok' => true,
-                    'mensaje' => $datos['siguiente'] . ' generada correctamente.'
+                    'mensaje' => 'Fase generada correctamente.'
                 ];
             } catch (PDOException $e) {
                 $this->pdo->rollBack();
@@ -413,7 +421,7 @@ class Partido
         ];
     }
 
-    private function obtenerClasificadosDieciseisavos()
+    private function obtenerClasificadosPorPosicion()
     {
         $sql = "
             WITH partidos_grupo AS (
@@ -496,15 +504,164 @@ class Partido
                 ) mejores_terceros
             )
             SELECT *
-            FROM clasificados
-            ORDER BY puntos DESC, diferencia_goles DESC, goles_favor DESC, pais ASC
-            LIMIT 32
+            FROM orden_grupo
+            WHERE posicion_grupo <= 3
+            ORDER BY codigo_grupo ASC, posicion_grupo ASC
         ";
 
         $stmt = $this->pdo->prepare($sql);
         $stmt->execute();
 
-        return $stmt->fetchAll();
+        $clasificados = [
+            'primeros' => [],
+            'segundos' => [],
+            'terceros' => []
+        ];
+
+        foreach ($stmt->fetchAll() as $fila) {
+            $grupo = $this->letraGrupo((int) $fila['codigo_grupo']);
+
+            if ((int) $fila['posicion_grupo'] === 1) {
+                $clasificados['primeros'][$grupo] = $fila;
+            } elseif ((int) $fila['posicion_grupo'] === 2) {
+                $clasificados['segundos'][$grupo] = $fila;
+            } elseif ((int) $fila['posicion_grupo'] === 3) {
+                $clasificados['terceros'][$grupo] = $fila;
+            }
+        }
+
+        uasort($clasificados['terceros'], function ($a, $b) {
+            return [$b['puntos'], $b['diferencia_goles'], $b['goles_favor'], $a['pais']]
+                <=> [$a['puntos'], $a['diferencia_goles'], $a['goles_favor'], $b['pais']];
+        });
+
+        $clasificados['terceros'] = array_slice($clasificados['terceros'], 0, 8, true);
+
+        return $clasificados;
+    }
+
+    private function calendarioDieciseisavos()
+    {
+        return [
+            73 => ['fecha' => '2026-06-28', 'hora' => '15:00:00', 'estadio' => 'Estadio Los Ángeles', 'local' => '2A', 'visitante' => '2B'],
+            74 => ['fecha' => '2026-06-29', 'hora' => '15:00:00', 'estadio' => 'Estadio Boston', 'local' => '1E', 'visitante' => '3A/B/C/D/F'],
+            75 => ['fecha' => '2026-06-29', 'hora' => '18:00:00', 'estadio' => 'Estadio Monterrey', 'local' => '1F', 'visitante' => '2C'],
+            76 => ['fecha' => '2026-06-29', 'hora' => '21:00:00', 'estadio' => 'Estadio Houston', 'local' => '1C', 'visitante' => '2F'],
+            77 => ['fecha' => '2026-06-30', 'hora' => '15:00:00', 'estadio' => 'Estadio Nueva York Nueva Jersey', 'local' => '1I', 'visitante' => '3C/D/F/G/H'],
+            78 => ['fecha' => '2026-06-30', 'hora' => '18:00:00', 'estadio' => 'Estadio Dallas', 'local' => '2E', 'visitante' => '2I'],
+            79 => ['fecha' => '2026-06-30', 'hora' => '21:00:00', 'estadio' => 'Estadio Ciudad de México', 'local' => '1A', 'visitante' => '3C/E/F/H/I'],
+            80 => ['fecha' => '2026-07-01', 'hora' => '15:00:00', 'estadio' => 'Estadio Atlanta', 'local' => '1L', 'visitante' => '3E/H/I/J/K'],
+            81 => ['fecha' => '2026-07-01', 'hora' => '18:00:00', 'estadio' => 'Estadio Bahía de San Francisco', 'local' => '1D', 'visitante' => '3B/E/F/I/J'],
+            82 => ['fecha' => '2026-07-01', 'hora' => '21:00:00', 'estadio' => 'Estadio Seattle', 'local' => '1G', 'visitante' => '3A/E/H/I/J'],
+            83 => ['fecha' => '2026-07-02', 'hora' => '15:00:00', 'estadio' => 'Estadio Toronto', 'local' => '2K', 'visitante' => '2L'],
+            84 => ['fecha' => '2026-07-02', 'hora' => '18:00:00', 'estadio' => 'Estadio Los Ángeles', 'local' => '1H', 'visitante' => '2J'],
+            85 => ['fecha' => '2026-07-02', 'hora' => '21:00:00', 'estadio' => 'Estadio BC Place Vancouver', 'local' => '1B', 'visitante' => '3E/F/G/I/J'],
+            86 => ['fecha' => '2026-07-03', 'hora' => '15:00:00', 'estadio' => 'Estadio Miami', 'local' => '1J', 'visitante' => '2H'],
+            87 => ['fecha' => '2026-07-03', 'hora' => '18:00:00', 'estadio' => 'Estadio Kansas City', 'local' => '1K', 'visitante' => '3D/E/I/J/L'],
+            88 => ['fecha' => '2026-07-03', 'hora' => '21:00:00', 'estadio' => 'Estadio Dallas', 'local' => '2D', 'visitante' => '2G']
+        ];
+    }
+
+    private function calendarioFasesEliminatorias()
+    {
+        return [
+            'Dieciseisavos de Final' => [
+                89 => ['fase' => 'Octavos de Final', 'fecha' => '2026-07-04', 'hora' => '15:00:00', 'estadio' => 'Estadio Filadelfia', 'local' => $this->ganadorDe(74), 'visitante' => $this->ganadorDe(77)],
+                90 => ['fase' => 'Octavos de Final', 'fecha' => '2026-07-04', 'hora' => '19:00:00', 'estadio' => 'Estadio Houston', 'local' => $this->ganadorDe(73), 'visitante' => $this->ganadorDe(75)],
+                91 => ['fase' => 'Octavos de Final', 'fecha' => '2026-07-05', 'hora' => '15:00:00', 'estadio' => 'Estadio Nueva York Nueva Jersey', 'local' => $this->ganadorDe(76), 'visitante' => $this->ganadorDe(78)],
+                92 => ['fase' => 'Octavos de Final', 'fecha' => '2026-07-05', 'hora' => '19:00:00', 'estadio' => 'Estadio Ciudad de México', 'local' => $this->ganadorDe(79), 'visitante' => $this->ganadorDe(80)],
+                93 => ['fase' => 'Octavos de Final', 'fecha' => '2026-07-06', 'hora' => '15:00:00', 'estadio' => 'Estadio Dallas', 'local' => $this->ganadorDe(83), 'visitante' => $this->ganadorDe(84)],
+                94 => ['fase' => 'Octavos de Final', 'fecha' => '2026-07-06', 'hora' => '19:00:00', 'estadio' => 'Estadio Seattle', 'local' => $this->ganadorDe(81), 'visitante' => $this->ganadorDe(82)],
+                95 => ['fase' => 'Octavos de Final', 'fecha' => '2026-07-07', 'hora' => '15:00:00', 'estadio' => 'Estadio Atlanta', 'local' => $this->ganadorDe(86), 'visitante' => $this->ganadorDe(88)],
+                96 => ['fase' => 'Octavos de Final', 'fecha' => '2026-07-07', 'hora' => '19:00:00', 'estadio' => 'Estadio BC Place Vancouver', 'local' => $this->ganadorDe(85), 'visitante' => $this->ganadorDe(87)]
+            ],
+            'Octavos de Final' => [
+                97 => ['fase' => 'Cuartos de Final', 'fecha' => '2026-07-09', 'hora' => '19:00:00', 'estadio' => 'Estadio Boston', 'local' => $this->ganadorDe(89), 'visitante' => $this->ganadorDe(90)],
+                98 => ['fase' => 'Cuartos de Final', 'fecha' => '2026-07-10', 'hora' => '19:00:00', 'estadio' => 'Estadio Los Ángeles', 'local' => $this->ganadorDe(93), 'visitante' => $this->ganadorDe(94)],
+                99 => ['fase' => 'Cuartos de Final', 'fecha' => '2026-07-11', 'hora' => '15:00:00', 'estadio' => 'Estadio Miami', 'local' => $this->ganadorDe(91), 'visitante' => $this->ganadorDe(92)],
+                100 => ['fase' => 'Cuartos de Final', 'fecha' => '2026-07-11', 'hora' => '19:00:00', 'estadio' => 'Estadio Kansas City', 'local' => $this->ganadorDe(95), 'visitante' => $this->ganadorDe(96)]
+            ],
+            'Cuartos de Final' => [
+                101 => ['fase' => 'Semifinales', 'fecha' => '2026-07-14', 'hora' => '19:00:00', 'estadio' => 'Estadio Dallas', 'local' => $this->ganadorDe(97), 'visitante' => $this->ganadorDe(98)],
+                102 => ['fase' => 'Semifinales', 'fecha' => '2026-07-15', 'hora' => '19:00:00', 'estadio' => 'Estadio Atlanta', 'local' => $this->ganadorDe(99), 'visitante' => $this->ganadorDe(100)]
+            ],
+            'Semifinales' => [
+                103 => ['fase' => 'Tercer Lugar', 'fecha' => '2026-07-18', 'hora' => '15:00:00', 'estadio' => 'Estadio Miami', 'local' => $this->perdedorDe(101), 'visitante' => $this->perdedorDe(102)],
+                104 => ['fase' => 'Final', 'fecha' => '2026-07-19', 'hora' => '15:00:00', 'estadio' => 'Estadio Nueva York Nueva Jersey', 'local' => $this->ganadorDe(101), 'visitante' => $this->ganadorDe(102)]
+            ]
+        ];
+    }
+
+    private function ganadorDe($codigoPartido)
+    {
+        return ['tipo' => 'ganador', 'partido' => $codigoPartido];
+    }
+
+    private function perdedorDe($codigoPartido)
+    {
+        return ['tipo' => 'perdedor', 'partido' => $codigoPartido];
+    }
+
+    private function resolverClasificado($regla, $clasificados, $tercerosAsignados)
+    {
+        $posicion = substr($regla, 0, 1);
+
+        if ($posicion === '1') {
+            return $clasificados['primeros'][substr($regla, 1, 1)]['pais'] ?? null;
+        }
+
+        if ($posicion === '2') {
+            return $clasificados['segundos'][substr($regla, 1, 1)]['pais'] ?? null;
+        }
+
+        return $tercerosAsignados[$regla]['pais'] ?? null;
+    }
+
+    private function asignarMejoresTerceros($terceros)
+    {
+        $slots = [];
+
+        foreach ($this->calendarioDieciseisavos() as $partido) {
+            if (str_starts_with($partido['visitante'], '3')) {
+                $slots[] = $partido['visitante'];
+            }
+        }
+
+        return $this->buscarAsignacionTerceros($slots, $terceros, []);
+    }
+
+    private function buscarAsignacionTerceros($slots, $terceros, $asignados)
+    {
+        if (empty($slots)) {
+            return $asignados;
+        }
+
+        $slot = array_shift($slots);
+        $permitidos = explode('/', substr($slot, 1));
+
+        foreach ($terceros as $grupo => $equipo) {
+            if (!in_array($grupo, $permitidos, true)) {
+                continue;
+            }
+
+            $restantes = $terceros;
+            unset($restantes[$grupo]);
+            $nuevoAsignados = $asignados;
+            $nuevoAsignados[$slot] = $equipo;
+
+            $resultado = $this->buscarAsignacionTerceros($slots, $restantes, $nuevoAsignados);
+
+            if ($resultado !== null) {
+                return $resultado;
+            }
+        }
+
+        return null;
+    }
+
+    private function letraGrupo($codigoGrupo)
+    {
+        return chr(64 + $codigoGrupo);
     }
 
     private function faseGruposCompleta()
@@ -586,6 +743,58 @@ class Partido
         return array_values(array_filter($perdedores, function ($perdedor) {
             return !empty($perdedor['pais_perdedor']);
         }));
+    }
+
+    private function obtenerGanadorPartido($codigoPartido)
+    {
+        $sql = "
+            SELECT
+                CASE
+                    WHEN goles_local_oficial > goles_visitante_oficial THEN pais_local
+                    WHEN goles_visitante_oficial > goles_local_oficial THEN pais_visitante
+                    ELSE NULL
+                END AS pais_ganador
+            FROM Partido
+            WHERE codigo_partido = :codigo_partido
+              AND goles_local_oficial IS NOT NULL
+              AND goles_visitante_oficial IS NOT NULL
+            LIMIT 1
+        ";
+
+        $stmt = $this->pdo->prepare($sql);
+        $stmt->execute([
+            ':codigo_partido' => $codigoPartido
+        ]);
+
+        $ganador = $stmt->fetchColumn();
+
+        return $ganador !== false ? $ganador : null;
+    }
+
+    private function obtenerPerdedorPartido($codigoPartido)
+    {
+        $sql = "
+            SELECT
+                CASE
+                    WHEN goles_local_oficial > goles_visitante_oficial THEN pais_visitante
+                    WHEN goles_visitante_oficial > goles_local_oficial THEN pais_local
+                    ELSE NULL
+                END AS pais_perdedor
+            FROM Partido
+            WHERE codigo_partido = :codigo_partido
+              AND goles_local_oficial IS NOT NULL
+              AND goles_visitante_oficial IS NOT NULL
+            LIMIT 1
+        ";
+
+        $stmt = $this->pdo->prepare($sql);
+        $stmt->execute([
+            ':codigo_partido' => $codigoPartido
+        ]);
+
+        $perdedor = $stmt->fetchColumn();
+
+        return $perdedor !== false ? $perdedor : null;
     }
 
     private function obtenerFechaDespuesDeFase($nombreFase)

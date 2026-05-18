@@ -76,7 +76,7 @@ $mensajesError = [
         </h2>
 
         <p class="mt-2 text-sm text-slate-400">
-          Usa la tabla de grupos completa para clasificar a 32 equipos.
+          Usa las posiciones de grupo y el calendario oficial de partidos 73 al 88.
         </p>
 
         <button type="submit"
@@ -97,7 +97,7 @@ $mensajesError = [
         </h2>
 
         <p class="mt-2 text-sm text-slate-400">
-          Toma los ganadores de la última fase eliminatoria completa.
+          Toma los ganadores según las llaves oficiales hasta la final.
         </p>
 
         <button type="submit"
