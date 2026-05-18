@@ -144,7 +144,11 @@ main [class*="divide-y"] > * + * {
     border-color: var(--color-borde) !important;
 }
 
-
+main [class*="hover:bg-white"]:hover,
+main tr:hover,
+main a.block:hover {
+    background-color: #EEE8D8 !important;
+}
 
 main table {
     width: 100%;
