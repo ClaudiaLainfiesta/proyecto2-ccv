@@ -3,6 +3,7 @@
 
 <head>
   <meta charset="UTF-8">
+  <?php require_once __DIR__ . '/../layouts/header.php'; ?>
   <title>Mis Predicciones - Quiniela Mundial 2026</title>
   <script src="https://cdn.tailwindcss.com"></script>
 </head>
@@ -35,9 +36,26 @@
     <?php endif; ?>
 
     <?php if (isset($_GET['error'])): ?>
+      <?php
+        $mensajesError = [
+          'datos' => 'No se pudo guardar la predicción. Revisá los datos del partido.',
+          'goles' => 'Los goles deben ser números mayores o iguales a cero.',
+          'empate' => 'Los empates solo están permitidos en Fase de Grupos.',
+          'tiempo' => 'El tiempo para vaticinar este partido ya terminó.'
+        ];
+        $mensajeError = $mensajesError[$_GET['error']] ?? 'No se pudo guardar la predicción. Revisá los datos o el tiempo del partido.';
+      ?>
       <div class="mb-6 rounded-2xl border border-red-500/30 bg-red-500/10 px-5 py-4 text-red-400 font-bold">
-        No se pudo guardar la predicción. Revisá los datos o el tiempo del partido.
+        <?php echo htmlspecialchars($mensajeError); ?>
       </div>
+    <?php endif; ?>
+
+    <?php if (empty($modoPartido)): ?>
+      <?php
+        $accionFiltro = 'predicciones.php';
+        $tituloFiltro = 'Ver fase';
+        require __DIR__ . '/../components/filtro_fases.php';
+      ?>
     <?php endif; ?>
 
     <section class="grid grid-cols-1 gap-5">
@@ -57,6 +75,8 @@
             <form action="predicciones.php" method="POST" class="grid grid-cols-1 lg:grid-cols-[1fr_auto] gap-6 items-center">
 
               <input type="hidden" name="codigo_partido" value="<?php echo htmlspecialchars($partido['codigo_partido']); ?>">
+              <input type="hidden" name="fase_actual" value="<?php echo htmlspecialchars($faseSeleccionada ?? ''); ?>">
+              <input type="hidden" name="modo_partido" value="<?php echo !empty($modoPartido) ? '1' : '0'; ?>">
 
               <div>
                 <p class="text-xs text-amber-400 font-bold uppercase tracking-widest">

@@ -29,7 +29,15 @@ function obtenerBanderaSrc($bandera) {
         return '';
     }
 
-    return 'data:image/png;base64,' . base64_encode($binario);
+    $mime = 'image/png';
+
+    if (str_starts_with($binario, "\xFF\xD8\xFF")) {
+        $mime = 'image/jpeg';
+    } elseif (str_starts_with($binario, 'RIFF') && substr($binario, 8, 4) === 'WEBP') {
+        $mime = 'image/webp';
+    }
+
+    return 'data:' . $mime . ';base64,' . base64_encode($binario);
 }
 
 function equipoConBandera($pais, $bandera, $clases = 'h-6 w-9') {
@@ -37,11 +45,11 @@ function equipoConBandera($pais, $bandera, $clases = 'h-6 w-9') {
     $src = obtenerBanderaSrc($bandera);
 
     if ($src === '') {
-        return '<span class="inline-flex items-center gap-2">' . $paisSeguro . '</span>';
+        return '<span class="inline-flex max-w-full min-w-0 items-center gap-2 align-middle"><span class="min-w-0 break-words">' . $paisSeguro . '</span></span>';
     }
 
-    return '<span class="inline-flex items-center gap-2">' .
+    return '<span class="inline-flex max-w-full min-w-0 items-center gap-2 align-middle">' .
         '<img src="' . htmlspecialchars($src) . '" alt="Bandera de ' . $paisSeguro . '" class="' . $clases . ' rounded-sm object-cover border border-white/10 shadow-sm">' .
-        '<span>' . $paisSeguro . '</span>' .
+        '<span class="min-w-0 break-words">' . $paisSeguro . '</span>' .
     '</span>';
 }

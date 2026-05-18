@@ -2,6 +2,7 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8">
+  <?php require_once __DIR__ . '/../layouts/header.php'; ?>
   <title>Resultados - Admin</title>
   <script src="https://cdn.tailwindcss.com"></script>
 </head>
@@ -37,6 +38,7 @@
         $mensajesError = [
           'partido' => 'No se encontró el partido seleccionado.',
           'goles' => 'Los goles oficiales deben ser números enteros mayores o iguales a cero.',
+          'empate' => 'Los empates oficiales solo están permitidos en Fase de Grupos.',
           'bd' => 'No se pudo actualizar el resultado. Revisa los datos e intenta de nuevo.'
         ];
         $mensajeError = $mensajesError[$_GET['error']] ?? 'No se pudo actualizar el resultado. Revisa los datos.';
@@ -45,6 +47,12 @@
         <?php echo htmlspecialchars($mensajeError); ?>
       </div>
     <?php endif; ?>
+
+    <?php
+      $accionFiltro = 'resultados.php';
+      $tituloFiltro = 'Ver fase';
+      require __DIR__ . '/../components/filtro_fases.php';
+    ?>
 
     <section class="bg-white/[0.03] border border-white/10 rounded-3xl shadow-xl shadow-black/20 overflow-hidden">
 
@@ -78,13 +86,13 @@
 
             <article class="bg-black/30 border border-white/10 rounded-3xl p-5 hover:bg-white/[0.04] transition-all">
 
-              <div class="flex items-start justify-between gap-4">
-                <div>
+              <div class="flex flex-col items-start justify-between gap-4 sm:flex-row">
+                <div class="min-w-0">
                   <p class="text-xs text-amber-400 font-bold uppercase tracking-widest">
                     <?php echo htmlspecialchars($partido['nombre_fase']); ?>
                   </p>
 
-                  <h3 class="mt-2 text-xl font-black text-white">
+                  <h3 class="mt-2 text-xl font-black text-white break-words">
                     <?php echo equipoConBandera($partido['pais_local'], $partido['bandera_local']); ?>
                     <span class="mx-2 text-slate-500">vs</span>
                     <?php echo equipoConBandera($partido['pais_visitante'], $partido['bandera_visitante']); ?>
@@ -127,6 +135,7 @@
               <form action="resultados.php" method="POST" class="mt-5">
                 <input type="hidden" name="codigo_partido" value="<?php echo htmlspecialchars($partido['codigo_partido']); ?>">
                 <input type="hidden" name="accion" value="guardar">
+                <input type="hidden" name="fase_actual" value="<?php echo htmlspecialchars($faseSeleccionada ?? ''); ?>">
 
                 <div class="grid grid-cols-1 md:grid-cols-[1fr_auto_1fr] gap-3 items-center">
 
@@ -178,6 +187,7 @@
                 <form action="resultados.php" method="POST" class="mt-3">
                   <input type="hidden" name="codigo_partido" value="<?php echo htmlspecialchars($partido['codigo_partido']); ?>">
                   <input type="hidden" name="accion" value="quitar">
+                  <input type="hidden" name="fase_actual" value="<?php echo htmlspecialchars($faseSeleccionada ?? ''); ?>">
 
                   <button type="submit"
                           onclick="return confirm('¿Seguro que querés quitar este resultado y reiniciar los puntos?')"

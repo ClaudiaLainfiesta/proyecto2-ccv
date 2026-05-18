@@ -18,12 +18,31 @@ if ($accion === 'registro') {
     $nombre = trim($_POST['nombre'] ?? '');
     $username = trim($_POST['usuario'] ?? '');
     $password = $_POST['password'] ?? '';
+    $confirmPassword = $_POST['confirm_password'] ?? '';
 
     /* VALIDAR CAMPOS */
 
-    if ($nombre === '' || $username === '' || $password === '') {
+    if ($nombre === '' || $username === '' || $password === '' || $confirmPassword === '') {
 
         $_SESSION['error'] = "Todos los campos son obligatorios";
+
+        header("Location: ../../public/login.php?panel=registro");
+        exit;
+    }
+
+    if ($password !== $confirmPassword) {
+
+        $_SESSION['error'] = "Las contraseñas no coinciden";
+
+        header("Location: ../../public/login.php?panel=registro");
+        exit;
+    }
+
+    /* VALIDAR SEGURIDAD DE CONTRASEÑA */
+
+    if (strlen($password) < 6 || !preg_match('/\p{L}/u', $password) || !preg_match('/\d/', $password)) {
+
+        $_SESSION['error'] = "La contraseña debe tener mínimo 6 caracteres, una letra y un número";
 
         header("Location: ../../public/login.php?panel=registro");
         exit;

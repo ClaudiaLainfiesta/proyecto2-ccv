@@ -12,12 +12,12 @@ if (isset($_SESSION['usuario'])) {
 
 <head>
     <meta charset="UTF-8">
+    <?php require_once __DIR__ . '/../app/views/layouts/header.php'; ?>
     <title>Quinielas Mundial 2026</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="stylesheet" href="assets/css/styles.css">
 </head>
 
-<body class="min-h-screen flex items-center justify-center bg-[#0b1018] px-4">
+<body class="min-h-screen flex items-center justify-center bg-[#0b1018] px-4 py-6 sm:py-8">
 
     <!-- ALERTAS DE ERROR -->
     <?php if (isset($_SESSION['error'])): ?>
@@ -38,7 +38,7 @@ if (isset($_SESSION['usuario'])) {
       al iniciar sesión automáticamente.
     -->
 
-    <div class="relative w-[880px] h-[560px] bg-white rounded-[30px] overflow-hidden shadow-2xl">
+    <div class="login-shell relative w-full max-w-[880px] min-h-[560px] bg-white rounded-[30px] overflow-hidden shadow-2xl">
 
         <input
             type="checkbox"
@@ -47,10 +47,10 @@ if (isset($_SESSION['usuario'])) {
             <?= (isset($_GET['panel']) && $_GET['panel'] === 'registro') ? 'checked' : '' ?>>
 
         <!-- GRID PRINCIPAL -->
-        <div class="grid grid-cols-2 h-full">
+        <div class="login-grid grid grid-cols-2 min-h-[560px]">
 
             <!-- REGISTRO (Se le añadió id="form-registro") -->
-            <div class="flex items-center justify-center px-14">
+            <div class="register-panel flex items-center justify-center px-8 sm:px-10 lg:px-14 py-10">
                 <form id="form-registro" action="../app/controllers/UsuarioController.php"
                     method="POST"
                     class="w-full max-w-[320px] flex flex-col gap-4">
@@ -84,6 +84,9 @@ if (isset($_SESSION['usuario'])) {
                                 id="registerPassword"
                                 name="password"
                                 placeholder="Tu contraseña"
+                                minlength="6"
+                                pattern="(?=.*[A-Za-zÁÉÍÓÚÜÑáéíóúüñ])(?=.*\d).{6,}"
+                                title="Mínimo 6 caracteres, una letra y un número"
                                 class="w-full px-4 py-3 pr-12 rounded-xl bg-gray-100 outline-none focus:ring-2 focus:ring-yellow-500">
 
                             <button type="button"
@@ -139,6 +142,10 @@ if (isset($_SESSION['usuario'])) {
                             class="hidden text-red-500 text-sm font-semibold mt-2">
                             Las contraseñas no coinciden
                         </p>
+                        <p id="passwordRulesError"
+                            class="hidden text-red-500 text-sm font-semibold mt-2">
+                            La contraseña debe tener mínimo 6 caracteres, una letra y un número
+                        </p>
                     </div>
 
                     <button
@@ -152,7 +159,7 @@ if (isset($_SESSION['usuario'])) {
             </div>
 
             <!-- LOGIN -->
-            <div class="flex items-center justify-center px-14">
+            <div class="login-panel flex items-center justify-center px-8 sm:px-10 lg:px-14 py-10">
                 <form action="../app/controllers/UsuarioController.php"
                     method="POST"
                     class="w-full max-w-[320px] flex flex-col gap-4">
@@ -211,7 +218,7 @@ if (isset($_SESSION['usuario'])) {
         </div>
 
         <!-- PANEL ANIMADO -->
-        <div class="absolute top-0 left-0 w-1/2 h-full bg-black rounded-r-[30px]
+        <div class="login-hero-panel absolute top-0 left-0 w-1/2 h-full bg-black rounded-r-[30px]
                 flex flex-col items-center justify-center gap-8 px-10 text-center text-white
                 transition-all duration-700
                 peer-checked:translate-x-full peer-checked:rounded-l-[30px]">
@@ -308,8 +315,26 @@ if (isset($_SESSION['usuario'])) {
         const passwordInput = document.getElementById('registerPassword');
         const confirmInput = document.getElementById('confirmPassword');
         const passwordError = document.getElementById('passwordError');
+        const passwordRulesError = document.getElementById('passwordRulesError');
+
+        function passwordCumpleReglas() {
+            return passwordInput.value.length >= 6 &&
+                /[A-Za-zÁÉÍÓÚÜÑáéíóúüñ]/.test(passwordInput.value) &&
+                /\d/.test(passwordInput.value);
+        }
 
         function validarPasswords() {
+            if (passwordInput.value === '') {
+                passwordRulesError.classList.add('hidden');
+                passwordInput.classList.remove('ring-2', 'ring-red-500');
+            } else if (!passwordCumpleReglas()) {
+                passwordRulesError.classList.remove('hidden');
+                passwordInput.classList.add('ring-2', 'ring-red-500');
+            } else {
+                passwordRulesError.classList.add('hidden');
+                passwordInput.classList.remove('ring-2', 'ring-red-500');
+            }
+
             if (confirmInput.value === '') {
                 passwordError.classList.add('hidden');
                 confirmInput.classList.remove('ring-2', 'ring-red-500');
@@ -329,6 +354,12 @@ if (isset($_SESSION['usuario'])) {
         confirmInput.addEventListener('input', validarPasswords);
 
         registerForm.addEventListener('submit', function(e) {
+            if (!passwordCumpleReglas()) {
+                e.preventDefault();
+                passwordRulesError.classList.remove('hidden');
+                passwordInput.classList.add('ring-2', 'ring-red-500');
+            }
+
             if (passwordInput.value !== confirmInput.value) {
                 e.preventDefault();
                 passwordError.classList.remove('hidden');

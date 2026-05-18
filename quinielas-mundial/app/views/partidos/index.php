@@ -10,6 +10,8 @@ $mensajesError = [
   'paises' => 'Un equipo no puede jugar contra sí mismo.',
   'fecha' => 'La fecha u hora del partido no es válida.',
   'duplicado' => 'Ya existe un partido con ese código.',
+  'estadio_fecha' => 'Ya hay un partido programado ese día en ese estadio.',
+  'equipo_horario' => 'Uno de los equipos ya tiene un partido programado en esa fecha y hora.',
   'referencia' => 'La fase o alguno de los equipos seleccionados no existe.',
   'relacionado' => 'No se pudo eliminar el partido porque tiene datos relacionados.',
   'bd' => 'No se pudo guardar el partido. Revisa los datos e intenta de nuevo.'
@@ -19,6 +21,7 @@ $mensajesError = [
 <html lang="es">
 <head>
   <meta charset="UTF-8">
+  <?php require_once __DIR__ . '/../layouts/header.php'; ?>
   <title>Partidos - Admin</title>
   <script src="https://cdn.tailwindcss.com"></script>
 </head>
@@ -114,6 +117,7 @@ $mensajesError = [
       <form action="partidos.php" method="POST" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
 
         <input type="hidden" name="accion" value="crear">
+        <input type="hidden" name="fase_actual" value="<?php echo htmlspecialchars($faseSeleccionada ?? ''); ?>">
 
         <div>
           <label class="block text-xs text-slate-400 font-bold mb-2 uppercase tracking-widest">
@@ -202,6 +206,12 @@ $mensajesError = [
 
     </section>
 
+    <?php
+      $accionFiltro = 'partidos.php';
+      $tituloFiltro = 'Ver fase';
+      require __DIR__ . '/../components/filtro_fases.php';
+    ?>
+
     <!-- LISTA PARTIDOS -->
     <section class="bg-white/[0.03] border border-white/10 rounded-3xl shadow-xl shadow-black/20 overflow-hidden">
 
@@ -232,6 +242,7 @@ $mensajesError = [
 
               <input type="hidden" name="accion" value="editar">
               <input type="hidden" name="codigo_partido" value="<?php echo htmlspecialchars($partido['codigo_partido']); ?>">
+              <input type="hidden" name="fase_actual" value="<?php echo htmlspecialchars($faseSeleccionada ?? ''); ?>">
 
               <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
 
@@ -324,7 +335,7 @@ $mensajesError = [
 
               </div>
 
-              <div class="flex lg:flex-col gap-3 justify-end">
+              <div class="flex flex-col gap-3 justify-end sm:flex-row lg:flex-col">
 
                 <button type="submit"
                         class="px-5 py-3 rounded-xl bg-gradient-to-r from-yellow-600 via-amber-500 to-yellow-500
@@ -338,6 +349,7 @@ $mensajesError = [
             <form action="partidos.php" method="POST" class="px-6 pb-6 lg:px-0 lg:pb-0">
               <input type="hidden" name="accion" value="eliminar">
               <input type="hidden" name="codigo_partido" value="<?php echo htmlspecialchars($partido['codigo_partido']); ?>">
+              <input type="hidden" name="fase_actual" value="<?php echo htmlspecialchars($faseSeleccionada ?? ''); ?>">
 
               <button type="submit"
                       onclick="return confirm('¿Seguro que querés eliminar este partido? También puede afectar predicciones relacionadas.')"
@@ -367,4 +379,3 @@ $mensajesError = [
 
 </body>
 </html>
-

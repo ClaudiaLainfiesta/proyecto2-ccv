@@ -2,6 +2,7 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8">
+  <?php require_once __DIR__ . '/../layouts/header.php'; ?>
   <title>Posiciones - Quiniela Mundial 2026</title>
   <script src="https://cdn.tailwindcss.com"></script>
 </head>

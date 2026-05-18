@@ -2,14 +2,18 @@
 
 require_once __DIR__ . '/../models/Partido.php';
 require_once __DIR__ . '/../models/Reporte.php';
+require_once __DIR__ . '/../helpers/auth.php';
 
 class ReporteController {
 
     public function calendario() {
 
         $partidoModel = new Partido();
+        $faseSeleccionada = $_GET['fase'] ?? '';
+        $busquedaPartidos = trim($_GET['q'] ?? '');
 
-        $partidos = $partidoModel->obtenerCalendario();
+        $partidos = $partidoModel->obtenerCalendario($faseSeleccionada, $busquedaPartidos);
+        $fases = $partidoModel->obtenerFases();
 
         require_once __DIR__ . '/../views/reportes/calendario.php';
     }
@@ -23,7 +27,7 @@ class ReporteController {
 
     public function ranking() {
         $reporteModel = new Reporte();
-        $ranking = $reporteModel->obtenerRanking();
+        $ranking = $reporteModel->obtenerRanking(obtenerUsuariosAdmin());
 
         require_once __DIR__ . '/../views/reportes/ranking.php';
     }
