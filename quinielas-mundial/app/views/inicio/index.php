@@ -237,7 +237,7 @@ $puntos = $puntos ?? 0;
 
                     <div class="relative z-10 h-full flex flex-col justify-between">
                         <div>
-                            <p class="text-sm font-black opacity-80 uppercase tracking-widest">
+                            <p class="text-sm font-black opacity-80 !text-black uppercase tracking-widest">
                                 Mis puntos
                             </p>
 
