@@ -21,6 +21,14 @@ if ($publicBaseUrl === '/' || $publicBaseUrl === '.') {
 }
 
 $assetBaseUrl = $assetBaseUrl ?? ($publicBaseUrl . '/assets');
+$paginaActualNavbar = basename(parse_url($_SERVER['SCRIPT_NAME'] ?? 'index.php', PHP_URL_PATH) ?: 'index.php');
+$navDesktopClass = 'px-4 py-2 rounded-xl transition-all duration-200 hover:text-amber-400 hover:bg-white/5';
+$navDesktopAdminClass = 'px-4 py-2 rounded-xl transition-all duration-200 text-amber-300 hover:text-amber-400 hover:bg-amber-500/10';
+$navSidebarClass = 'px-4 py-3 rounded-xl transition-all hover:bg-white/5 hover:text-amber-400 text-slate-200';
+$navSidebarAdminClass = 'px-4 py-3 rounded-xl transition-all bg-amber-500/5 text-amber-300 hover:bg-amber-500/10 hover:text-amber-400';
+$navClass = function (string $pagina, string $baseClass) use ($paginaActualNavbar): string {
+    return $baseClass . ($paginaActualNavbar === $pagina ? ' nav-link-active' : '');
+};
 
 if (is_array($usuarioSesion)) {
     $username = $usuarioSesion['username'] ?? '';
@@ -201,17 +209,17 @@ if (!empty($username)) {
 
             <!-- ENRUTADORES ESCRITORIO (Ocultos en móviles: hidden lg:flex) -->
             <div class="hidden lg:flex items-center justify-center flex-1 space-x-1 font-medium text-sm text-white whitespace-nowrap">
-                <a href="index.php" class="px-4 py-2 rounded-xl transition-all duration-200 hover:text-amber-400 hover:bg-white/5">Inicio</a>
+                <a href="index.php" class="<?php echo htmlspecialchars($navClass('index.php', $navDesktopClass)); ?>">Inicio</a>
 
                 <?php if ($esAdmin): ?>
-                    <a href="equipos.php" class="px-4 py-2 rounded-xl transition-all duration-200 text-amber-300 hover:text-amber-400 hover:bg-amber-500/10">Equipos</a>
-                    <a href="partidos.php" class="px-4 py-2 rounded-xl transition-all duration-200 text-amber-300 hover:text-amber-400 hover:bg-amber-500/10">Partidos</a>
-                    <a href="resultados.php" class="px-4 py-2 rounded-xl transition-all duration-200 text-amber-300 hover:text-amber-400 hover:bg-amber-500/10">Resultados</a>
+                    <a href="equipos.php" class="<?php echo htmlspecialchars($navClass('equipos.php', $navDesktopAdminClass)); ?>">Equipos</a>
+                    <a href="partidos.php" class="<?php echo htmlspecialchars($navClass('partidos.php', $navDesktopAdminClass)); ?>">Partidos</a>
+                    <a href="resultados.php" class="<?php echo htmlspecialchars($navClass('resultados.php', $navDesktopAdminClass)); ?>">Resultados</a>
                 <?php else: ?>
-                    <a href="calendario.php" class="px-4 py-2 rounded-xl transition-all duration-200 hover:text-amber-400 hover:bg-white/5">Calendario</a>
-                    <a href="predicciones.php" class="px-4 py-2 rounded-xl transition-all duration-200 hover:text-amber-400 hover:bg-white/5">Mis Predicciones</a>
-                    <a href="posiciones.php" class="px-4 py-2 rounded-xl transition-all duration-200 hover:text-amber-400 hover:bg-white/5">Posiciones</a>
-                    <a href="ranking.php" class="px-4 py-2 rounded-xl transition-all duration-200 hover:text-amber-400 hover:bg-white/5">Ranking</a>
+                    <a href="calendario.php" class="<?php echo htmlspecialchars($navClass('calendario.php', $navDesktopClass)); ?>">Calendario</a>
+                    <a href="predicciones.php" class="<?php echo htmlspecialchars($navClass('predicciones.php', $navDesktopClass)); ?>">Mis Predicciones</a>
+                    <a href="posiciones.php" class="<?php echo htmlspecialchars($navClass('posiciones.php', $navDesktopClass)); ?>">Posiciones</a>
+                    <a href="ranking.php" class="<?php echo htmlspecialchars($navClass('ranking.php', $navDesktopClass)); ?>">Ranking</a>
                 <?php endif; ?>
             </div>
 
@@ -324,20 +332,20 @@ if (!empty($username)) {
 
         <!-- Links de navegación móvil -->
         <div class="p-4 flex flex-col space-y-1 font-medium text-sm">
-            <a href="index.php" class="px-4 py-3 rounded-xl transition-all hover:bg-amber-500/10 hover:text-amber-400 flex items-center gap-3 text-slate-200">
+            <a href="index.php" class="<?php echo htmlspecialchars($navClass('index.php', $navSidebarClass . ' flex items-center gap-3')); ?>">
                 <span>Inicio</span>
             </a>
 
             <?php if ($esAdmin): ?>
                 <div class="pt-2 pb-1 px-4 text-[11px] font-bold text-amber-500 uppercase tracking-wider">Administración</div>
-                <a href="equipos.php" class="px-4 py-3 rounded-xl transition-all bg-amber-500/5 text-amber-300 hover:bg-amber-500/10 hover:text-amber-400">Equipos</a>
-                <a href="partidos.php" class="px-4 py-3 rounded-xl transition-all bg-amber-500/5 text-amber-300 hover:bg-amber-500/10 hover:text-amber-400">Partidos</a>
-                <a href="resultados.php" class="px-4 py-3 rounded-xl transition-all bg-amber-500/5 text-amber-300 hover:bg-amber-500/10 hover:text-amber-400">Resultados</a>
+                <a href="equipos.php" class="<?php echo htmlspecialchars($navClass('equipos.php', $navSidebarAdminClass)); ?>">Equipos</a>
+                <a href="partidos.php" class="<?php echo htmlspecialchars($navClass('partidos.php', $navSidebarAdminClass)); ?>">Partidos</a>
+                <a href="resultados.php" class="<?php echo htmlspecialchars($navClass('resultados.php', $navSidebarAdminClass)); ?>">Resultados</a>
             <?php else: ?>
-                <a href="calendario.php" class="px-4 py-3 rounded-xl transition-all hover:bg-white/5 hover:text-amber-400 text-slate-200">Calendario</a>
-                <a href="predicciones.php" class="px-4 py-3 rounded-xl transition-all hover:bg-white/5 hover:text-amber-400 text-slate-200">Mis Predicciones</a>
-                <a href="posiciones.php" class="px-4 py-3 rounded-xl transition-all hover:bg-white/5 hover:text-amber-400 text-slate-200">Posiciones</a>
-                <a href="ranking.php" class="px-4 py-3 rounded-xl transition-all hover:bg-white/5 hover:text-amber-400 text-slate-200">Ranking</a>
+                <a href="calendario.php" class="<?php echo htmlspecialchars($navClass('calendario.php', $navSidebarClass)); ?>">Calendario</a>
+                <a href="predicciones.php" class="<?php echo htmlspecialchars($navClass('predicciones.php', $navSidebarClass)); ?>">Mis Predicciones</a>
+                <a href="posiciones.php" class="<?php echo htmlspecialchars($navClass('posiciones.php', $navSidebarClass)); ?>">Posiciones</a>
+                <a href="ranking.php" class="<?php echo htmlspecialchars($navClass('ranking.php', $navSidebarClass)); ?>">Ranking</a>
             <?php endif; ?>
         </div>
     </div>

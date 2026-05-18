@@ -316,10 +316,19 @@ main .admin-pending-link:hover {
     text-underline-offset: 0.45rem;
 }
 
+.main-navbar a.nav-link-active,
+.main-navbar a.nav-link-active:hover,
+#sidebar-menu a.nav-link-active,
+#sidebar-menu a.nav-link-active:hover {
+    background: rgba(244, 241, 230, 0.10) !important;
+    color: #FFFFFF !important;
+    text-decoration: none !important;
+}
+
 .main-navbar form,
-.main-navbar [class*="bg-white/"],
+.main-navbar :not(a)[class*="bg-white/"],
 #sidebar-menu form,
-#sidebar-menu [class*="bg-white/"] {
+#sidebar-menu :not(a)[class*="bg-white/"] {
     background: rgba(244, 241, 230, 0.06) !important;
     border-color: rgba(201, 168, 76, 0.35) !important;
 }
@@ -335,6 +344,19 @@ main .admin-pending-link:hover {
     background: transparent !important;
     border: 0 !important;
     color: #FFFFFF !important;
+    box-shadow: none !important;
+}
+
+.main-navbar input:focus,
+#sidebar-menu input:focus {
+    border: 0 !important;
+    box-shadow: none !important;
+    outline: none !important;
+}
+
+.main-navbar form:focus-within,
+#sidebar-menu form:focus-within {
+    border-color: rgba(201, 168, 76, 0.35) !important;
     box-shadow: none !important;
 }
 
@@ -537,23 +559,30 @@ footer {
     scrollbar-color: rgba(166, 124, 50, 0.65) rgba(224, 217, 200, 0.65);
 }
 
-@media (max-width: 767px) {
+@media (max-width: 1023px) {
     .login-shell {
-        display: flex;
-        flex-direction: column-reverse;
-        min-height: auto;
+        display: flex !important;
+        flex-direction: column-reverse !important;
+        min-height: auto !important;
+        max-width: min(100%, 34rem) !important;
         border-radius: var(--radius) !important;
         overflow: hidden;
     }
 
     .login-grid {
-        display: block;
-        min-height: auto;
+        display: block !important;
+        grid-template-columns: none !important;
+        min-height: auto !important;
     }
 
     .register-panel,
     .login-panel {
-        padding: 2rem 1.25rem;
+        padding: 2rem 1.25rem !important;
+    }
+
+    .register-panel form,
+    .login-panel form {
+        max-width: 22rem !important;
     }
 
     #toggle:not(:checked) ~ .login-grid .register-panel,
@@ -562,32 +591,35 @@ footer {
     }
 
     .login-hero-panel {
-        position: relative;
-        inset: auto;
-        width: 100%;
-        height: auto;
-        min-height: 220px;
+        position: relative !important;
+        top: auto !important;
+        right: auto !important;
+        bottom: auto !important;
+        left: auto !important;
+        width: 100% !important;
+        height: auto !important;
+        min-height: 220px !important;
         transform: none !important;
         border-radius: var(--radius) var(--radius) 0 0 !important;
-        gap: 1rem;
-        padding: 1.5rem;
+        gap: 1rem !important;
+        padding: 1.5rem !important;
     }
 
     .login-hero-panel img {
-        width: 7rem;
+        width: 7rem !important;
     }
 
     .login-hero-panel h2 {
-        font-size: 1.75rem;
-        line-height: 1.1;
+        font-size: 1.75rem !important;
+        line-height: 1.1 !important;
     }
 
     .login-hero-panel label {
-        width: 100%;
+        width: 100% !important;
         min-height: 44px;
-        display: inline-flex;
-        align-items: center;
-        justify-content: center;
+        display: inline-flex !important;
+        align-items: center !important;
+        justify-content: center !important;
     }
 
     .login-shell input,
@@ -598,22 +630,21 @@ footer {
 
 @media (min-width: 768px) and (max-width: 1023px) {
     .login-shell {
-        max-width: 720px;
+        max-width: 38rem !important;
     }
 
     .register-panel,
     .login-panel {
-        padding-left: 2rem;
-        padding-right: 2rem;
+        padding: 2.5rem 3rem !important;
     }
 
     .login-hero-panel {
-        padding-left: 2rem;
-        padding-right: 2rem;
+        min-height: 260px !important;
+        padding: 2rem 3rem !important;
     }
 
     .login-hero-panel img {
-        width: 12rem;
+        width: 12rem !important;
     }
 }
 

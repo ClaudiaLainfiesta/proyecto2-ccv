@@ -18,6 +18,14 @@ if (isset($_SESSION['usuario'])) {
 </head>
 
 <body class="min-h-screen flex items-center justify-center bg-[#0b1018] px-4 py-6 sm:py-8">
+    <div class="user-bounce-bg" aria-hidden="true">
+        <div class="user-bounce-ball">
+            <img
+                src="https://upload.wikimedia.org/wikipedia/commons/d/d3/Soccerball.svg"
+                alt=""
+                class="user-bounce-ball-svg">
+        </div>
+    </div>
 
     <!-- ALERTAS DE ERROR -->
     <?php if (isset($_SESSION['error'])): ?>
@@ -38,7 +46,7 @@ if (isset($_SESSION['usuario'])) {
       al iniciar sesión automáticamente.
     -->
 
-    <div class="login-shell relative w-full max-w-[880px] min-h-[560px] bg-white rounded-[30px] overflow-hidden shadow-2xl">
+    <div class="login-shell relative z-10 w-full max-w-[880px] min-h-[560px] bg-white rounded-[30px] overflow-hidden shadow-2xl">
 
         <input
             type="checkbox"
@@ -218,10 +226,10 @@ if (isset($_SESSION['usuario'])) {
         </div>
 
         <!-- PANEL ANIMADO -->
-        <div class="login-hero-panel absolute top-0 left-0 w-1/2 h-full bg-black rounded-r-[30px]
-                flex flex-col items-center justify-center gap-8 px-10 text-center text-white
-                transition-all duration-700
-                peer-checked:translate-x-full peer-checked:rounded-l-[30px]">
+        <div class="login-hero-panel absolute top-0 left-0 w-1/2 h-full !bg-black rounded-r-[30px]
+        flex flex-col items-center justify-center gap-8 px-10 text-center text-white
+        transition-all duration-700
+        peer-checked:translate-x-full peer-checked:rounded-l-[30px]">
 
             <img src="<?php echo htmlspecialchars($assetBaseUrl . '/img/copa26.jpeg?v=2'); ?>" alt="Copa Mundial 2026" class="w-64 drop-shadow-2xl">
 
