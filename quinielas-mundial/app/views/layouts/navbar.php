@@ -14,6 +14,13 @@ $puntos = 0;
 $esAdmin = esAdmin();
 $busquedaNavbar = trim($_GET['q'] ?? '');
 $accionBusquedaNavbar = $esAdmin ? 'partidos.php' : 'calendario.php';
+$publicBaseUrl = $publicBaseUrl ?? rtrim(str_replace('\\', '/', dirname($_SERVER['SCRIPT_NAME'] ?? '')), '/');
+
+if ($publicBaseUrl === '/' || $publicBaseUrl === '.') {
+    $publicBaseUrl = '';
+}
+
+$assetBaseUrl = $assetBaseUrl ?? ($publicBaseUrl . '/assets');
 
 if (is_array($usuarioSesion)) {
     $username = $usuarioSesion['username'] ?? '';
@@ -62,7 +69,7 @@ if (!empty($username)) {
     .scroll-x-soft {
         -webkit-overflow-scrolling: touch;
         scrollbar-width: thin;
-        scrollbar-color: rgba(245, 158, 11, 0.45) rgba(15, 23, 42, 0.5);
+        scrollbar-color: rgba(166, 124, 50, 0.65) rgba(224, 217, 200, 0.65);
     }
 
     @media (max-width: 1023px) {
@@ -100,14 +107,14 @@ if (!empty($username)) {
         }
 
         main p[class*="tracking"] {
-            letter-spacing: 0.16em !important;
+            letter-spacing: 0 !important;
         }
 
         main section[class*="rounded-3xl"],
         main article[class*="rounded-3xl"],
         main div[class*="rounded-3xl"],
         main form[class*="rounded-3xl"] {
-            border-radius: 1.25rem !important;
+            border-radius: 4px !important;
         }
 
         main input,
@@ -175,7 +182,7 @@ if (!empty($username)) {
                     class="p-1 rounded-2xl flex items-center justify-center h-11 w-11
                         shadow-lg shadow-amber-500/20 hover:scale-105 active:scale-95
                         transition-all duration-200 focus:outline-none cursor-pointer">
-                    <img src="assets/img/copa26.jpeg" alt="Logo Quiniela-Copa" class="h-full w-full object-contain">
+                    <img src="<?php echo htmlspecialchars($assetBaseUrl . '/img/copa26.jpeg?v=2'); ?>" alt="Logo Quiniela-Copa" class="h-full w-full object-contain">
                 </button>
 
                 <!-- Texto al lado del logo -->
@@ -257,6 +264,15 @@ if (!empty($username)) {
     </div>
 </nav>
 <div class="h-16"></div>
+
+<div class="user-bounce-bg" aria-hidden="true">
+    <div class="user-bounce-ball">
+        <img
+            src="https://upload.wikimedia.org/wikipedia/commons/d/d3/Soccerball.svg"
+            alt=""
+            class="user-bounce-ball-svg">
+    </div>
+</div>
 
 <!-- ========================================== -->
 <!-- MENÚ LATERAL MÓVIL (SIDEBAR) & OVERLAY     -->
