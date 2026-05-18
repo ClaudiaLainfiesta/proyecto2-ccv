@@ -167,4 +167,42 @@ class Reporte {
 
         return $stmt->fetchAll();
     }
+
+    public function obtenerLlavesEliminatorias() {
+        $sql = "
+            SELECT
+                p.*,
+                el.bandera AS bandera_local,
+                ev.bandera AS bandera_visitante
+            FROM Partido p
+            LEFT JOIN Equipo el
+                ON p.pais_local = el.pais
+            LEFT JOIN Equipo ev
+                ON p.pais_visitante = ev.pais
+            WHERE p.nombre_fase IN (
+                'Dieciseisavos de Final',
+                'Octavos de Final',
+                'Cuartos de Final',
+                'Semifinales',
+                'Tercer Lugar',
+                'Final'
+            )
+            ORDER BY
+                CASE p.nombre_fase
+                    WHEN 'Dieciseisavos de Final' THEN 1
+                    WHEN 'Octavos de Final' THEN 2
+                    WHEN 'Cuartos de Final' THEN 3
+                    WHEN 'Semifinales' THEN 4
+                    WHEN 'Tercer Lugar' THEN 5
+                    WHEN 'Final' THEN 6
+                    ELSE 99
+                END,
+                p.codigo_partido ASC
+        ";
+
+        $stmt = $this->pdo->prepare($sql);
+        $stmt->execute();
+
+        return $stmt->fetchAll();
+    }
 }

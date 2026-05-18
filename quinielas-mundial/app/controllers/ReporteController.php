@@ -38,4 +38,11 @@ class ReporteController {
 
         require_once __DIR__ . '/../views/reportes/quinielas.php';
     }
+
+    public function llaves() {
+        $reporteModel = new Reporte();
+        $partidosLlaves = $reporteModel->obtenerLlavesEliminatorias();
+
+        require_once __DIR__ . '/../views/reportes/llaves.php';
+    }
 }
