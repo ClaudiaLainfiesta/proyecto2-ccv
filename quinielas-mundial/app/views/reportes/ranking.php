@@ -64,15 +64,15 @@
                     </span>
                   </td>
 
-                  <td class="px-6 py-5 font-black text-white">
+                  <td class="px-6 py-5 font-black">
                     <?php echo htmlspecialchars($participante['nombre']); ?>
                   </td>
 
-                  <td class="px-6 py-5 text-sm text-white">
+                  <td class="px-6 py-5 font-black">
                     @<?php echo htmlspecialchars($participante['username']); ?>
                   </td>
 
-                  <td class="px-6 py-5 text-sm text-white">
+                  <td class="px-6 py-5 font-black">
                     <?php echo htmlspecialchars($participante['predicciones']); ?>
                   </td>
 
