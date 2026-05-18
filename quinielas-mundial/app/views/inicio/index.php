@@ -44,7 +44,7 @@ $puntos = $puntos ?? 0;
             <!-- RESUMEN ADMIN -->
             <section class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-10">
 
-                <div class="bg-red-500/10 border border-red-500/30 rounded-3xl p-6 shadow-xl shadow-black/20">
+                <div class="admin-pending-card bg-red-500/10 border border-red-500/30 rounded-3xl p-6 shadow-xl shadow-black/20">
                     <p class="text-sm text-red-300 font-bold uppercase tracking-widest">
                         Pendientes de resultado
                     </p>
@@ -56,7 +56,7 @@ $puntos = $puntos ?? 0;
 
 
                     <a href="resultados.php"
-                        class="inline-flex mt-5 px-5 py-3 rounded-xl bg-red-500 text-white font-black hover:scale-105 active:scale-95 transition-all">
+                        class="admin-pending-link inline-flex mt-5 px-5 py-3 rounded-xl bg-red-500 text-white font-black hover:scale-105 active:scale-95 transition-all">
                         Ir a resultados
                     </a>
                 </div>
@@ -207,6 +207,7 @@ $puntos = $puntos ?? 0;
         <?php else: ?>
 
             <!-- AQUÍ VA TU INICIO NORMAL DE USUARIO -->
+            <div class="relative z-10">
             <section class="grid grid-cols-1 lg:grid-cols-3 gap-8 mb-10 items-stretch">
 
                 <div class="lg:col-span-2 bg-white/[0.03] border border-white/10 rounded-3xl p-8 shadow-xl shadow-black/20">
@@ -312,6 +313,7 @@ $puntos = $puntos ?? 0;
             </section>
 
 
+            </div>
         <?php endif; ?>
 
     </main>

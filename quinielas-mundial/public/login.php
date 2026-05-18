@@ -223,7 +223,7 @@ if (isset($_SESSION['usuario'])) {
                 transition-all duration-700
                 peer-checked:translate-x-full peer-checked:rounded-l-[30px]">
 
-            <img src="assets/img/copa26.jpeg" class="w-64 drop-shadow-2xl">
+            <img src="<?php echo htmlspecialchars($assetBaseUrl . '/img/copa26.jpeg?v=2'); ?>" alt="Copa Mundial 2026" class="w-64 drop-shadow-2xl">
 
             <div class="space-y-3">
                 <h2 class="text-4xl font-bold">Quiniela Mundial</h2>
