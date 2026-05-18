@@ -38,16 +38,18 @@ function obtenerUsernameSesion() {
 |--------------------------------------------------------------------------
 */
 
+function obtenerUsuariosAdmin() {
+    return [
+        'anleu29',
+        'admin1'
+    ];
+}
+
 function esAdmin() {
 
     $username = obtenerUsernameSesion();
 
-    $admins = [
-        'anleu29',
-        'admin1'
-    ];
-
-    return in_array($username, $admins);
+    return in_array($username, obtenerUsuariosAdmin());
 }
 
 /*

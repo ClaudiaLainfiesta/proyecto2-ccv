@@ -15,9 +15,30 @@ class Partido
         $this->pdo = $db->conectar();
     }
 
-    public function obtenerCalendario()
+    public function obtenerCalendario($fase = null, $busqueda = null)
     {
         $puedeVaticinarSql = sqlPuedeVaticinar('p');
+        $condiciones = [];
+        $params = [];
+
+        if ($fase !== null && $fase !== '') {
+            $condiciones[] = 'p.nombre_fase = :fase';
+            $params[':fase'] = $fase;
+        }
+
+        if ($busqueda !== null && trim($busqueda) !== '') {
+            $condiciones[] = "(
+                p.pais_local ILIKE :busqueda
+                OR p.pais_visitante ILIKE :busqueda
+                OR p.estadio ILIKE :busqueda
+                OR p.fecha::text = :busqueda_exacta
+                OR to_char(p.fecha, 'DD/MM/YYYY') = :busqueda_exacta
+            )";
+            $params[':busqueda'] = '%' . trim($busqueda) . '%';
+            $params[':busqueda_exacta'] = trim($busqueda);
+        }
+
+        $where = !empty($condiciones) ? 'WHERE ' . implode(' AND ', $condiciones) : '';
 
         $sql = "
             SELECT
@@ -30,11 +51,12 @@ class Partido
                 ON p.pais_local = el.pais
             LEFT JOIN Equipo ev
                 ON p.pais_visitante = ev.pais
+            {$where}
             ORDER BY p.fecha ASC, p.hora ASC
         ";
 
         $stmt = $this->pdo->prepare($sql);
-        $stmt->execute();
+        $stmt->execute($params);
 
         return $stmt->fetchAll();
     }
@@ -147,6 +169,25 @@ class Partido
         $stmt->execute();
 
         return $stmt->fetchAll();
+    }
+
+    public function obtenerFasePartido($codigoPartido)
+    {
+        $sql = "
+            SELECT nombre_fase
+            FROM Partido
+            WHERE codigo_partido = :codigo_partido
+            LIMIT 1
+        ";
+
+        $stmt = $this->pdo->prepare($sql);
+        $stmt->execute([
+            ':codigo_partido' => $codigoPartido
+        ]);
+
+        $fase = $stmt->fetchColumn();
+
+        return $fase !== false ? $fase : null;
     }
 
     public function crearFasesEliminatorias()
@@ -613,6 +654,68 @@ class Partido
             ':pais_local' => $paisLocal,
             ':pais_visitante' => $paisVisitante
         ]);
+    }
+
+    public function existePartidoEnEstadioFecha($estadio, $fecha, $codigoIgnorar = null)
+    {
+        $sql = "
+            SELECT 1
+            FROM Partido
+            WHERE LOWER(estadio) = LOWER(:estadio)
+              AND fecha = :fecha
+        ";
+
+        $params = [
+            ':estadio' => $estadio,
+            ':fecha' => $fecha
+        ];
+
+        if ($codigoIgnorar !== null) {
+            $sql .= " AND codigo_partido <> :codigo_ignorar";
+            $params[':codigo_ignorar'] = $codigoIgnorar;
+        }
+
+        $sql .= " LIMIT 1";
+
+        $stmt = $this->pdo->prepare($sql);
+        $stmt->execute($params);
+
+        return (bool) $stmt->fetchColumn();
+    }
+
+    public function existePartidoDeEquiposEnHorario($paisLocal, $paisVisitante, $fecha, $hora, $codigoIgnorar = null)
+    {
+        $sql = "
+            SELECT 1
+            FROM Partido
+            WHERE fecha = :fecha
+              AND hora = :hora
+              AND (
+                  pais_local IN (:pais_local_a, :pais_visitante_a)
+                  OR pais_visitante IN (:pais_local_b, :pais_visitante_b)
+              )
+        ";
+
+        $params = [
+            ':pais_local_a' => $paisLocal,
+            ':pais_visitante_a' => $paisVisitante,
+            ':pais_local_b' => $paisLocal,
+            ':pais_visitante_b' => $paisVisitante,
+            ':fecha' => $fecha,
+            ':hora' => $hora
+        ];
+
+        if ($codigoIgnorar !== null) {
+            $sql .= " AND codigo_partido <> :codigo_ignorar";
+            $params[':codigo_ignorar'] = $codigoIgnorar;
+        }
+
+        $sql .= " LIMIT 1";
+
+        $stmt = $this->pdo->prepare($sql);
+        $stmt->execute($params);
+
+        return (bool) $stmt->fetchColumn();
     }
 
     public function eliminarPartido($codigoPartido)

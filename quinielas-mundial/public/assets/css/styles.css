@@ -11,3 +11,83 @@ input::-webkit-credentials-filter-button {
     visibility: hidden;
     pointer-events: none;
 }
+
+@media (max-width: 767px) {
+    .login-shell {
+        display: flex;
+        flex-direction: column-reverse;
+        min-height: auto;
+        border-radius: 24px;
+        overflow: hidden;
+    }
+
+    .login-grid {
+        display: block;
+        min-height: auto;
+    }
+
+    .register-panel,
+    .login-panel {
+        padding: 2rem 1.25rem;
+    }
+
+    #toggle:not(:checked) ~ .login-grid .register-panel,
+    #toggle:checked ~ .login-grid .login-panel {
+        display: none;
+    }
+
+    .login-hero-panel {
+        position: relative;
+        inset: auto;
+        width: 100%;
+        height: auto;
+        min-height: 220px;
+        transform: none !important;
+        border-radius: 24px 24px 0 0 !important;
+        gap: 1rem;
+        padding: 1.5rem;
+    }
+
+    .login-hero-panel img {
+        width: 7rem;
+    }
+
+    .login-hero-panel h2 {
+        font-size: 1.75rem;
+        line-height: 1.1;
+    }
+
+    .login-hero-panel label {
+        width: 100%;
+        min-height: 44px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .login-shell input,
+    .login-shell button {
+        min-height: 44px;
+    }
+}
+
+@media (min-width: 768px) and (max-width: 1023px) {
+    .login-shell {
+        max-width: 720px;
+    }
+
+    .register-panel,
+    .login-panel {
+        padding-left: 2rem;
+        padding-right: 2rem;
+    }
+
+    .login-hero-panel {
+        padding-left: 2rem;
+        padding-right: 2rem;
+    }
+
+    .login-hero-panel img {
+        width: 12rem;
+    }
+}

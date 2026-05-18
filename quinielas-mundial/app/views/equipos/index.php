@@ -2,12 +2,24 @@
 $equipos = $equipos ?? [];
 $grupos = $grupos ?? [];
 require_once __DIR__ . '/../../helpers/banderas.php';
+
+$mensajesError = [
+  'datos' => 'Todos los campos del equipo son obligatorios.',
+  'duplicado' => 'Ya existe un equipo con ese país.',
+  'imagen' => 'No se pudo subir la imagen. Intenta de nuevo.',
+  'imagen_tamano' => 'La imagen debe pesar 2 MB o menos.',
+  'imagen_tipo' => 'La bandera debe ser una imagen PNG, JPG o WebP.',
+  'referencia' => 'El grupo seleccionado no existe.',
+  'relacionado' => 'No se pudo eliminar el equipo porque tiene partidos o datos relacionados.',
+  'bd' => 'No se pudo guardar el equipo. Revisa los datos e intenta de nuevo.'
+];
 ?>
 
 <!DOCTYPE html>
 <html lang="es">
 <head>
   <meta charset="UTF-8">
+  <?php require_once __DIR__ . '/../layouts/header.php'; ?>
   <title>Equipos - Admin</title>
   <script src="https://cdn.tailwindcss.com"></script>
 </head>
@@ -39,6 +51,16 @@ require_once __DIR__ . '/../../helpers/banderas.php';
       </div>
     <?php endif; ?>
 
+    <?php if (isset($_GET['error'])): ?>
+      <?php
+        $error = $_GET['error'];
+        $mensajeError = $mensajesError[$error] ?? $error;
+      ?>
+      <div class="mb-6 rounded-2xl border border-red-500/30 bg-red-500/10 px-5 py-4 text-red-400 font-bold">
+        <?php echo htmlspecialchars($mensajeError); ?>
+      </div>
+    <?php endif; ?>
+
     <!-- CREAR EQUIPO -->
     <section class="mb-10 bg-white/[0.03] border border-white/10 rounded-3xl p-6 shadow-xl shadow-black/20">
 
@@ -46,7 +68,7 @@ require_once __DIR__ . '/../../helpers/banderas.php';
         Crear nuevo equipo
       </h2>
 
-      <form action="equipos.php" method="POST" class="grid grid-cols-1 md:grid-cols-[1fr_220px_auto] gap-4 items-end">
+      <form action="equipos.php" method="POST" enctype="multipart/form-data" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-[1fr_180px_240px_auto] gap-4 items-end">
 
         <input type="hidden" name="accion" value="crear">
 
@@ -74,6 +96,29 @@ require_once __DIR__ . '/../../helpers/banderas.php';
             <?php endforeach; ?>
 
           </select>
+        </div>
+
+        <div>
+          <label class="block text-xs text-slate-400 font-bold mb-2 uppercase tracking-widest">
+            Bandera
+          </label>
+
+          <div class="rounded-xl border border-white/10 bg-slate-950 p-2 focus-within:border-amber-400">
+            <label for="bandera-crear"
+                   class="flex cursor-pointer items-center justify-center gap-2 rounded-lg bg-gradient-to-r from-yellow-600 via-amber-500 to-yellow-500 px-4 py-2 text-sm font-black text-slate-950 transition hover:scale-[1.02] active:scale-[0.98]">
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M12 16V4m0 0 4 4m-4-4-4 4M4 16.5V19a1 1 0 0 0 1 1h14a1 1 0 0 0 1-1v-2.5" />
+              </svg>
+              Seleccionar bandera
+            </label>
+
+            <input id="bandera-crear" type="file" name="bandera" accept="image/png,image/jpeg,image/webp"
+                   class="sr-only js-bandera-input">
+
+            <p class="js-bandera-name mt-2 rounded-lg bg-white/[0.03] px-3 py-2 text-xs font-bold text-slate-500">
+              Ninguna imagen seleccionada
+            </p>
+          </div>
         </div>
 
         <button type="submit"
@@ -114,11 +159,11 @@ require_once __DIR__ . '/../../helpers/banderas.php';
 
         <?php if (!empty($equipos)): ?>
 
-          <?php foreach ($equipos as $equipo): ?>
+          <?php foreach ($equipos as $indiceEquipo => $equipo): ?>
 
             <div class="p-6 grid grid-cols-1 lg:grid-cols-[1fr_auto] gap-5 hover:bg-white/[0.04] transition-colors">
 
-              <form action="equipos.php" method="POST" class="grid grid-cols-1 md:grid-cols-[1fr_220px_auto] gap-4 items-end">
+              <form action="equipos.php" method="POST" enctype="multipart/form-data" class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-[1fr_180px_240px_auto] gap-4 items-end">
 
                 <input type="hidden" name="accion" value="editar">
                 <input type="hidden" name="pais_original" value="<?php echo htmlspecialchars($equipo['pais']); ?>">
@@ -153,6 +198,31 @@ require_once __DIR__ . '/../../helpers/banderas.php';
                     <?php endforeach; ?>
 
                   </select>
+                </div>
+
+                <div>
+                  <label class="block text-xs text-slate-500 font-bold mb-2 uppercase tracking-widest">
+                    Bandera
+                  </label>
+
+                  <?php $banderaId = 'bandera-editar-' . $indiceEquipo; ?>
+
+                  <div class="rounded-xl border border-white/10 bg-slate-950 p-2 focus-within:border-amber-400">
+                    <label for="<?php echo htmlspecialchars($banderaId); ?>"
+                           class="flex cursor-pointer items-center justify-center gap-2 rounded-lg bg-amber-500/10 px-4 py-2 text-sm font-black text-amber-300 transition hover:bg-amber-500/20 active:scale-[0.98]">
+                      <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M12 16V4m0 0 4 4m-4-4-4 4M4 16.5V19a1 1 0 0 0 1 1h14a1 1 0 0 0 1-1v-2.5" />
+                      </svg>
+                      Cambiar bandera
+                    </label>
+
+                    <input id="<?php echo htmlspecialchars($banderaId); ?>" type="file" name="bandera" accept="image/png,image/jpeg,image/webp"
+                           class="sr-only js-bandera-input">
+
+                    <p class="js-bandera-name mt-2 rounded-lg bg-white/[0.03] px-3 py-2 text-xs font-bold text-slate-500">
+                      Mantener bandera actual
+                    </p>
+                  </div>
                 </div>
 
                 <button type="submit"
@@ -194,6 +264,28 @@ require_once __DIR__ . '/../../helpers/banderas.php';
 
   </main>
 
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      document.querySelectorAll('.js-bandera-input').forEach((input) => {
+        const contenedor = input.closest('div');
+        const nombreArchivo = contenedor?.querySelector('.js-bandera-name');
+
+        input.addEventListener('change', () => {
+          const archivo = input.files?.[0];
+
+          if (!nombreArchivo) {
+            return;
+          }
+
+          if (archivo) {
+            nombreArchivo.textContent = archivo.name;
+            nombreArchivo.classList.remove('text-slate-500', 'bg-white/[0.03]');
+            nombreArchivo.classList.add('text-emerald-300', 'bg-emerald-500/10', 'border', 'border-emerald-500/20');
+          }
+        });
+      });
+    });
+  </script>
+
 </body>
 </html>
-

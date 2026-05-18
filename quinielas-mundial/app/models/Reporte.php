@@ -11,7 +11,22 @@ class Reporte {
         $this->pdo = $db->conectar();
     }
 
-    public function obtenerRanking() {
+    public function obtenerRanking($usuariosAdmin = []) {
+        $params = [];
+        $filtroAdmins = '';
+
+        if (!empty($usuariosAdmin)) {
+            $placeholders = [];
+
+            foreach ($usuariosAdmin as $index => $usernameAdmin) {
+                $placeholder = ':admin_' . $index;
+                $placeholders[] = $placeholder;
+                $params[$placeholder] = $usernameAdmin;
+            }
+
+            $filtroAdmins = 'WHERE u.username NOT IN (' . implode(', ', $placeholders) . ')';
+        }
+
         $sql = "
             SELECT
                 u.username,
@@ -21,12 +36,13 @@ class Reporte {
             FROM Usuario u
             LEFT JOIN Prediccion pr
                 ON u.username = pr.username
+            {$filtroAdmins}
             GROUP BY u.username, u.nombre
             ORDER BY puntos DESC, predicciones DESC, u.nombre ASC
         ";
 
         $stmt = $this->pdo->prepare($sql);
-        $stmt->execute();
+        $stmt->execute($params);
 
         return $stmt->fetchAll();
     }

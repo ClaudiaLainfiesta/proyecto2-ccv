@@ -12,6 +12,8 @@ $username = '';
 $nombre = 'Usuario';
 $puntos = 0;
 $esAdmin = esAdmin();
+$busquedaNavbar = trim($_GET['q'] ?? '');
+$accionBusquedaNavbar = $esAdmin ? 'partidos.php' : 'calendario.php';
 
 if (is_array($usuarioSesion)) {
     $username = $usuarioSesion['username'] ?? '';
@@ -37,9 +39,133 @@ if (!empty($username)) {
 }
 ?>
 
+<style>
+    html,
+    body {
+        margin: 0;
+        padding: 0;
+        overflow-x: hidden;
+    }
+
+    .main-navbar {
+        left: 0;
+        right: 0;
+        top: 0;
+        height: 4rem;
+        margin-top: 0;
+    }
+
+    main {
+        width: 100%;
+    }
+
+    .scroll-x-soft {
+        -webkit-overflow-scrolling: touch;
+        scrollbar-width: thin;
+        scrollbar-color: rgba(245, 158, 11, 0.45) rgba(15, 23, 42, 0.5);
+    }
+
+    @media (max-width: 1023px) {
+        .main-navbar {
+            height: 4.5rem;
+        }
+
+        .main-navbar > div > div {
+            height: 4.5rem;
+        }
+
+        .main-navbar + .h-16 {
+            height: 4.5rem;
+        }
+    }
+
+    @media (max-width: 640px) {
+        main {
+            padding: 1.5rem 1rem !important;
+        }
+
+        main > section:first-child {
+            margin-bottom: 1.5rem !important;
+        }
+
+        main h1 {
+            font-size: clamp(2rem, 10vw, 2.75rem) !important;
+            line-height: 1.05 !important;
+            overflow-wrap: anywhere;
+        }
+
+        main h3 {
+            line-height: 1.25 !important;
+            overflow-wrap: anywhere;
+        }
+
+        main p[class*="tracking"] {
+            letter-spacing: 0.16em !important;
+        }
+
+        main section[class*="rounded-3xl"],
+        main article[class*="rounded-3xl"],
+        main div[class*="rounded-3xl"],
+        main form[class*="rounded-3xl"] {
+            border-radius: 1.25rem !important;
+        }
+
+        main input,
+        main select,
+        main button,
+        main a[class*="rounded"] {
+            min-height: 44px;
+        }
+
+        main button[type="submit"],
+        main a[class*="bg-gradient"],
+        main a[class*="bg-red"] {
+            width: 100%;
+            justify-content: center;
+            text-align: center;
+        }
+
+        main table {
+            min-width: 680px;
+        }
+
+        main .overflow-x-auto {
+            margin-left: -1rem;
+            margin-right: -1rem;
+            padding-left: 1rem;
+            padding-right: 1rem;
+            -webkit-overflow-scrolling: touch;
+        }
+
+        main .items-center.justify-between {
+            align-items: flex-start;
+            gap: 0.75rem;
+        }
+
+        #sidebar-menu {
+            width: min(22rem, calc(100vw - 1rem));
+        }
+    }
+
+    @media (min-width: 641px) and (max-width: 1023px) {
+        main {
+            padding: 2rem 1.5rem !important;
+        }
+
+        main h1 {
+            font-size: 3rem !important;
+            line-height: 1.05 !important;
+        }
+
+        main table {
+            min-width: 760px;
+        }
+    }
+</style>
+
 <!-- NAVBAR PRINCIPAL -->
-<nav class="bg-black/95 backdrop-blur-md text-white shadow-lg sticky top-0 z-50 border-b border-amber-500/10">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+<nav class="main-navbar fixed w-full bg-black/95 backdrop-blur-md text-white shadow-lg z-50 border-b border-amber-500/10">
+    <div class="max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8">
         <div class="flex items-center justify-between h-16">
 
             <!-- LOGO (Actúa como disparador del menú en móviles) -->
@@ -55,7 +181,7 @@ if (!empty($username)) {
                 <!-- Texto al lado del logo -->
                 <div class="hidden sm:block">
                     <a href="index.php"
-                        class="font-extrabold text-lg tracking-tight
+                        class="font-extrabold text-lg tracking-tight whitespace-nowrap
                             bg-gradient-to-r from-yellow-600 via-amber-400 to-yellow-500
                             bg-clip-text text-transparent">
                         Quiniela Mundial 2026
@@ -67,7 +193,7 @@ if (!empty($username)) {
             </div>
 
             <!-- ENRUTADORES ESCRITORIO (Ocultos en móviles: hidden lg:flex) -->
-            <div class="hidden lg:flex items-center space-x-1 font-medium text-sm text-white">
+            <div class="hidden lg:flex items-center justify-center flex-1 space-x-1 font-medium text-sm text-white whitespace-nowrap">
                 <a href="index.php" class="px-4 py-2 rounded-xl transition-all duration-200 hover:text-amber-400 hover:bg-white/5">Inicio</a>
 
                 <?php if ($esAdmin): ?>
@@ -84,9 +210,22 @@ if (!empty($username)) {
 
             <!-- SECCIÓN USUARIO -->
             <div class="flex items-center gap-3">
+                <form action="<?php echo htmlspecialchars($accionBusquedaNavbar); ?>" method="GET"
+                    class="hidden xl:flex items-center gap-2 w-64 2xl:w-80 h-11 rounded-2xl border border-white/10 bg-white/[0.04] px-3 focus-within:border-amber-400/70">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 shrink-0 text-slate-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="m21 21-4.35-4.35" />
+                        <circle cx="11" cy="11" r="7" />
+                    </svg>
+
+                    <input type="search" name="q"
+                        value="<?php echo htmlspecialchars($busquedaNavbar); ?>"
+                        placeholder="Buscar equipo o fecha"
+                        class="min-w-0 flex-1 bg-transparent text-sm font-semibold text-white placeholder:text-slate-500 outline-none">
+                </form>
+
                 <?php if (!$esAdmin): ?>
-                    <div class="hidden sm:flex items-center gap-2 bg-white/[0.04] border border-white/10 px-4 py-2 rounded-2xl">
-                        <div class="flex flex-col leading-none">
+                    <div class="hidden sm:flex h-11 items-center gap-2 bg-white/[0.04] border border-white/10 px-4 rounded-2xl whitespace-nowrap">
+                        <div class="flex items-center leading-none">
                             <span class="text-sm font-black text-amber-400">
                                 <?php echo htmlspecialchars($puntos); ?> pts
                             </span>
@@ -104,7 +243,7 @@ if (!empty($username)) {
                     </div>
 
                     <a href="logout.php" title="Cerrar sesión"
-                        class="h-11 w-11 rounded-2xl bg-amber-500/10 border border-amber-500/30
+                        class="js-logout-confirm h-11 w-11 rounded-2xl bg-amber-500/10 border border-amber-500/30
                         flex items-center justify-center font-black text-amber-400
                         hover:bg-gradient-to-br hover:from-yellow-600 hover:via-amber-400 hover:to-yellow-500
                         hover:text-slate-950 hover:scale-105 active:scale-95
@@ -117,6 +256,7 @@ if (!empty($username)) {
         </div>
     </div>
 </nav>
+<div class="h-16"></div>
 
 <!-- ========================================== -->
 <!-- MENÚ LATERAL MÓVIL (SIDEBAR) & OVERLAY     -->
@@ -142,6 +282,29 @@ if (!empty($username)) {
                 </svg>
             </button>
         </div>
+
+        <!-- Buscador móvil/lateral -->
+        <form action="<?php echo htmlspecialchars($accionBusquedaNavbar); ?>" method="GET"
+            class="mx-4 mt-4 flex h-11 items-center gap-2 rounded-2xl border border-white/10 bg-white/[0.04] px-3 focus-within:border-amber-400/70">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 shrink-0 text-slate-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                <path stroke-linecap="round" stroke-linejoin="round" d="m21 21-4.35-4.35" />
+                <circle cx="11" cy="11" r="7" />
+            </svg>
+
+            <input type="search" name="q"
+                value="<?php echo htmlspecialchars($busquedaNavbar); ?>"
+                placeholder="Buscar partido"
+                class="min-w-0 flex-1 bg-transparent text-sm font-semibold text-white placeholder:text-slate-500 outline-none">
+
+            <button type="submit"
+                class="flex h-8 w-8 shrink-0 items-center justify-center rounded-xl bg-amber-500/10 text-amber-400 transition hover:bg-amber-500/20 active:scale-95"
+                title="Buscar">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="m21 21-4.35-4.35" />
+                    <circle cx="11" cy="11" r="7" />
+                </svg>
+            </button>
+        </form>
 
         <!-- Links de navegación móvil -->
         <div class="p-4 flex flex-col space-y-1 font-medium text-sm">
@@ -173,7 +336,37 @@ if (!empty($username)) {
                     <span class="text-xs font-black text-amber-400 mt-1"><?php echo htmlspecialchars($puntos); ?> pts</span>
                 <?php endif; ?>
             </div>
-            <a href="logout.php" class="text-xs font-bold text-red-400 hover:text-red-300 underline">Salir</a>
+            <a href="logout.php" class="js-logout-confirm text-xs font-bold text-red-400 hover:text-red-300 underline">Salir</a>
+        </div>
+    </div>
+</div>
+
+<!-- MODAL CONFIRMAR CIERRE DE SESIÓN -->
+<div id="logout-modal" class="fixed inset-0 z-[60] hidden items-center justify-center bg-black/70 backdrop-blur-sm px-4">
+    <div class="w-full max-w-sm rounded-2xl border border-amber-500/25 bg-slate-950 p-6 text-white shadow-2xl shadow-black/40">
+        <div class="mb-5 flex items-center gap-3">
+            <div class="flex h-11 w-11 items-center justify-center rounded-2xl bg-amber-500/10 text-amber-400 border border-amber-500/30">
+                <?php echo strtoupper(substr($nombre, 0, 1)); ?>
+            </div>
+            <div>
+                <h2 class="text-lg font-black text-slate-100">¿Cerrar sesión?</h2>
+                <p class="text-sm text-slate-400">@<?php echo htmlspecialchars($username); ?></p>
+            </div>
+        </div>
+
+        <p class="text-sm leading-6 text-slate-300">
+            ¿Seguro que quieres salir de tu cuenta?
+        </p>
+
+        <div class="mt-6 flex justify-end gap-3">
+            <button type="button" id="logout-cancel"
+                class="rounded-xl border border-white/10 px-4 py-2 text-sm font-bold text-slate-200 transition hover:bg-white/10 active:scale-95">
+                No, quedarme
+            </button>
+            <button type="button" id="logout-confirm"
+                class="rounded-xl bg-red-500 px-4 py-2 text-sm font-bold text-white shadow-lg shadow-red-500/20 transition hover:bg-red-400 active:scale-95">
+                Sí, salir
+            </button>
         </div>
     </div>
 </div>
@@ -185,6 +378,11 @@ if (!empty($username)) {
         const btnCloseMenu = document.getElementById('btn-close-menu');
         const sidebarMenu = document.getElementById('sidebar-menu');
         const sidebarOverlay = document.getElementById('sidebar-overlay');
+        const logoutLinks = document.querySelectorAll('.js-logout-confirm');
+        const logoutModal = document.getElementById('logout-modal');
+        const logoutConfirm = document.getElementById('logout-confirm');
+        const logoutCancel = document.getElementById('logout-cancel');
+        let logoutUrl = 'logout.php';
 
         function openMenu() {
             // Solo actuar si estamos en pantallas móviles (opcional, pero buena práctica)
@@ -212,5 +410,41 @@ if (!empty($username)) {
         btnMenu.addEventListener('click', openMenu);
         btnCloseMenu.addEventListener('click', closeMenu);
         sidebarOverlay.addEventListener('click', closeMenu);
+
+        function openLogoutModal(url) {
+            logoutUrl = url;
+            logoutModal.classList.remove('hidden');
+            logoutModal.classList.add('flex');
+        }
+
+        function closeLogoutModal() {
+            logoutModal.classList.add('hidden');
+            logoutModal.classList.remove('flex');
+        }
+
+        logoutLinks.forEach((link) => {
+            link.addEventListener('click', (event) => {
+                event.preventDefault();
+                openLogoutModal(link.getAttribute('href'));
+            });
+        });
+
+        logoutConfirm.addEventListener('click', () => {
+            window.location.href = logoutUrl;
+        });
+
+        logoutCancel.addEventListener('click', closeLogoutModal);
+
+        logoutModal.addEventListener('click', (event) => {
+            if (event.target === logoutModal) {
+                closeLogoutModal();
+            }
+        });
+
+        document.addEventListener('keydown', (event) => {
+            if (event.key === 'Escape' && !logoutModal.classList.contains('hidden')) {
+                closeLogoutModal();
+            }
+        });
     });
 </script>

@@ -2,6 +2,7 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8">
+  <?php require_once __DIR__ . '/../layouts/header.php'; ?>
   <title>Calendario - Quiniela Mundial 2026</title>
   <script src="https://cdn.tailwindcss.com"></script>
 </head>
@@ -28,6 +29,12 @@
     
     </section>
 
+    <?php
+      $accionFiltro = 'calendario.php';
+      $tituloFiltro = 'Ver fase';
+      require __DIR__ . '/../components/filtro_fases.php';
+    ?>
+
     <section class="bg-white/[0.03] border border-white/10 rounded-3xl shadow-xl shadow-black/20 overflow-hidden">
 
       <div class="px-6 py-5 border-b border-white/10 flex items-center justify-between">
@@ -50,7 +57,6 @@
         <table class="w-full text-left">
           <thead class="bg-black/40 border-b border-white/10">
             <tr>
-              <th class="px-6 py-4 text-xs font-bold uppercase tracking-widest text-slate-400">#</th>
               <th class="px-6 py-4 text-xs font-bold uppercase tracking-widest text-slate-400">Fecha</th>
               <th class="px-6 py-4 text-xs font-bold uppercase tracking-widest text-slate-400">Hora</th>
               <th class="px-6 py-4 text-xs font-bold uppercase tracking-widest text-slate-400">Partido</th>
@@ -76,10 +82,6 @@
                 ?>
 
                 <tr class="hover:bg-white/[0.04] transition-colors">
-                  <td class="px-6 py-5 text-sm font-bold text-slate-400">
-                    <?php echo htmlspecialchars($partido['codigo_partido']); ?>
-                  </td>
-
                   <td class="px-6 py-5 whitespace-nowrap">
                     <span class="text-sm font-bold text-white">
                       <?php echo date('d/m/Y', strtotime($partido['fecha'])); ?>
@@ -153,7 +155,7 @@
             <?php else: ?>
 
               <tr>
-                <td colspan="8" class="px-6 py-12 text-center text-slate-400">
+                <td colspan="7" class="px-6 py-12 text-center text-slate-400">
                   No hay partidos registrados todavía.
                 </td>
               </tr>

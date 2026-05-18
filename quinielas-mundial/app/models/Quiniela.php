@@ -12,7 +12,7 @@ class Quiniela {
         $this->pdo = $db->conectar();
     }
 
-    public function obtenerPartidosParaPrediccion($username, $codigoPartido = null) {
+    public function obtenerPartidosParaPrediccion($username, $codigoPartido = null, $fase = null) {
         $puedeVaticinarSql = sqlPuedeVaticinar('p');
 
         if ($codigoPartido !== null) {
@@ -54,6 +54,16 @@ class Quiniela {
             return $stmt->fetchAll();
         }
 
+        $filtroFase = '';
+        $params = [
+            ':username' => $username
+        ];
+
+        if ($fase !== null && $fase !== '') {
+            $filtroFase = 'WHERE p.nombre_fase = :fase';
+            $params[':fase'] = $fase;
+        }
+
         $sql = "
             SELECT 
                 p.codigo_partido,
@@ -79,13 +89,12 @@ class Quiniela {
             INNER JOIN Prediccion pr
                 ON p.codigo_partido = pr.codigo_partido
                 AND pr.username = :username
+            {$filtroFase}
             ORDER BY p.fecha ASC, p.hora ASC
         ";
 
         $stmt = $this->pdo->prepare($sql);
-        $stmt->execute([
-            ':username' => $username
-        ]);
+        $stmt->execute($params);
 
         return $stmt->fetchAll();
     }

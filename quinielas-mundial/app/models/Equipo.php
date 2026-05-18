@@ -40,7 +40,25 @@ class Equipo {
         return $stmt->fetchAll();
     }
 
-    public function crearEquipo($pais, $codigoGrupo) {
+    public function existeEquipo($pais) {
+        $sql = "
+            SELECT 1
+            FROM Equipo
+            WHERE LOWER(pais) = LOWER(:pais)
+            LIMIT 1
+        ";
+
+        $stmt = $this->pdo->prepare($sql);
+        $stmt->execute([
+            ':pais' => $pais
+        ]);
+
+        return (bool) $stmt->fetchColumn();
+    }
+
+    public function crearEquipo($pais, $codigoGrupo, $banderaHex = null) {
+        $banderaHex = $banderaHex ?? '00';
+
         $sql = "
             INSERT INTO Equipo (
                 pais,
@@ -49,7 +67,7 @@ class Equipo {
             ) VALUES (
                 :pais,
                 :codigo_grupo,
-                '\\x00'
+                decode(:bandera_hex, 'hex')
             )
         ";
 
@@ -57,26 +75,36 @@ class Equipo {
 
         return $stmt->execute([
             ':pais' => $pais,
-            ':codigo_grupo' => $codigoGrupo
+            ':codigo_grupo' => $codigoGrupo,
+            ':bandera_hex' => $banderaHex
         ]);
     }
 
-    public function actualizarEquipo($paisOriginal, $pais, $codigoGrupo) {
+    public function actualizarEquipo($paisOriginal, $pais, $codigoGrupo, $banderaHex = null) {
+        $actualizarBandera = $banderaHex !== null;
+
         $sql = "
             UPDATE Equipo
             SET 
                 pais = :pais,
                 codigo_grupo = :codigo_grupo
+                " . ($actualizarBandera ? ", bandera = decode(:bandera_hex, 'hex')" : "") . "
             WHERE pais = :pais_original
         ";
 
         $stmt = $this->pdo->prepare($sql);
 
-        return $stmt->execute([
+        $params = [
             ':pais_original' => $paisOriginal,
             ':pais' => $pais,
             ':codigo_grupo' => $codigoGrupo
-        ]);
+        ];
+
+        if ($actualizarBandera) {
+            $params[':bandera_hex'] = $banderaHex;
+        }
+
+        return $stmt->execute($params);
     }
 
     public function eliminarEquipo($pais) {
