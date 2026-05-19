@@ -41,7 +41,6 @@ $puntos = $puntos ?? 0;
 
             </section>
 
-            <!-- RESUMEN ADMIN -->
             <section class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-10">
 
                 <div class="admin-pending-card bg-red-500/10 border border-red-500/30 rounded-3xl p-6 shadow-xl shadow-black/20">
@@ -143,7 +142,6 @@ $puntos = $puntos ?? 0;
 
                 </div>
 
-                <!-- PROXIMOS PARTIDOS -->
                 <div class="bg-white/[0.03] border border-white/10 rounded-3xl shadow-xl shadow-black/20 overflow-hidden">
 
                     <div class="px-6 py-5 border-b border-white/10">
@@ -206,7 +204,6 @@ $puntos = $puntos ?? 0;
 
         <?php else: ?>
 
-            <!-- AQUÍ VA TU INICIO NORMAL DE USUARIO -->
             <div class="relative z-10">
             <section class="grid grid-cols-1 lg:grid-cols-3 gap-8 mb-10 items-stretch">
 

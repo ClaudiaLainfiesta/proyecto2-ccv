@@ -166,7 +166,6 @@ if ($campeon !== null && !empty($final)) {
   <title>Llaves - Quiniela Mundial 2026</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <style>
-    /* CAMBIO SOLICITADO: Removidos los bordes de la caja exterior para un look 100% integrado */
     .bracket-shell { 
       background: transparent !important; 
       border: none !important; 
@@ -192,7 +191,6 @@ if ($campeon !== null && !empty($final)) {
     .bracket-column-matches { position: relative; flex: 1; display: flex; flex-direction: column; justify-content: space-around; }
     .bracket-match-wrapper { position: relative; width: 100%; }
 
-    /* === TARJETA PARTIDO === */
     .bracket-match {
       position: relative; width: 100%;
       display: flex; flex-direction: column;
@@ -205,7 +203,6 @@ if ($campeon !== null && !empty($final)) {
     .bracket-match:hover { box-shadow: 0 6px 20px rgba(0,0,0,.12); transform: translateY(-1px); }
     .bracket-match-done  { border-top: 3px solid var(--color-oro-oscuro, #a07830); }
 
-    /* Cabecera */
     .bracket-match-meta {
       display: flex; align-items: center; justify-content: space-between;
       padding: .28rem .55rem;
@@ -217,7 +214,6 @@ if ($campeon !== null && !empty($final)) {
     .bracket-badge-done    { background: #fef0c7; color: #7a5500; }
     .bracket-badge-pending { background: #fef3c7; color: #92400e; }
 
-    /* Equipos */
     .bracket-teams { display: flex; flex-direction: column; }
     .bracket-divider { height: 1px; background: #e8dfc8; margin: 0 .55rem; }
     .bracket-team { display: flex; align-items: center; justify-content: space-between; gap: .4rem; padding: .42rem .55rem; }
@@ -226,18 +222,15 @@ if ($campeon !== null && !empty($final)) {
     .bracket-team-empty  { color: #bbb; font-style: italic; }
     .bracket-team-name { display: flex; align-items: center; gap: .45rem; font-size: .71rem; font-weight: 700; color: #231d0f; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; min-width: 0; flex: 1; }
 
-    /* Marcador */
     .bracket-score { min-width: 1.55rem; height: 1.55rem; display: flex; align-items: center; justify-content: center; font-size: .72rem; font-weight: 900; border-radius: 5px; background: #eae0cc; color: #4a3a18; flex-shrink: 0; }
     .bracket-score-win   { background: #7a5500; color: #ffe99a; }
     .bracket-score-empty { background: #f0e8d8; color: #c0a870; }
 
-    /* Pie */
     .bracket-match-footer { display: flex; align-items: center; gap: .3rem; padding: .26rem .55rem; background: linear-gradient(135deg,#f7f0e0,#f0e8d0); border-top: 1px solid #e5d9c0; }
     .bracket-footer-date,.bracket-footer-time { font-size: .57rem; font-weight: 700; color: #9c7a3a; letter-spacing: .03em; }
     .bracket-footer-dot  { font-size: .57rem; color: #c9a84c; }
     .bracket-footer-tbd  { font-size: .57rem; color: #b8a07a; font-style: italic; }
 
-    /* Banner campeón */
     .bracket-champion-banner {
       display: flex; align-items: center; justify-content: center; gap: .5rem;
       padding: .4rem .55rem;
@@ -247,7 +240,6 @@ if ($campeon !== null && !empty($final)) {
     .bracket-champion-banner img { width: 2rem; height: 1.3rem; object-fit: cover; border-radius: 2px; box-shadow: 0 1px 4px rgba(0,0,0,.4); }
     .bracket-champion-banner span { font-size: .62rem; font-weight: 900; color: #ffe99a; text-transform: uppercase; letter-spacing: .08em; }
 
-    /* Centro */
     .bracket-center { min-height: 930px; display: flex; flex-direction: column; justify-content: center; align-items: center; gap: .75rem; z-index: 2; }
     .bracket-center-title,.bracket-center > div,.bracket-special { width: 100%; }
     .bracket-center-title { min-height: 2rem; display: grid; place-items: center; background: var(--color-negro); color: var(--color-oro) !important; font-size: .68rem; font-weight: 900; text-transform: uppercase; letter-spacing: .15em; border-radius: 5px 5px 0 0; }
@@ -299,7 +291,6 @@ if ($campeon !== null && !empty($final)) {
                 <?php if ($banderaCampeon !== ''): ?>
                   <img src="<?php echo htmlspecialchars($banderaCampeon); ?>" alt="Campeon" class="bracket-trophy-flag">
                 <?php else: ?>
-                  
                 <?php endif; ?>
               </div>
               <p class="bracket-trophy-country text-xs font-black uppercase mt-1">

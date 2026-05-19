@@ -4,22 +4,10 @@ if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
 
-/*
-|--------------------------------------------------------------------------
-| VALIDAR SESIÓN
-|--------------------------------------------------------------------------
-*/
-
 if (!isset($_SESSION['usuario'])) {
     header("Location: /proyecto2-ccv/quinielas-mundial/public/login.php");
     exit;
 }
-
-/*
-|--------------------------------------------------------------------------
-| OBTENER USERNAME
-|--------------------------------------------------------------------------
-*/
 
 function obtenerUsernameSesion() {
 
@@ -32,11 +20,7 @@ function obtenerUsernameSesion() {
     return $usuarioSesion;
 }
 
-/*
-|--------------------------------------------------------------------------
-| VALIDAR ADMIN
-|--------------------------------------------------------------------------
-*/
+
 
 function obtenerUsuariosAdmin() {
     return [
@@ -52,11 +36,7 @@ function esAdmin() {
     return in_array($username, obtenerUsuariosAdmin());
 }
 
-/*
-|--------------------------------------------------------------------------
-| BLOQUEAR SI NO ES ADMIN
-|--------------------------------------------------------------------------
-*/
+
 
 function soloAdmin() {
 

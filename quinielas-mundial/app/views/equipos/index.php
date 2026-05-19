@@ -43,7 +43,6 @@ $mensajesError = [
         </span>
       </h1>
 
-     
     </section>
 
     <?php if (isset($_GET['success'])): ?>
@@ -62,7 +61,6 @@ $mensajesError = [
       </div>
     <?php endif; ?>
 
-    <!-- CREAR EQUIPO -->
     <section class="mb-10 bg-white/[0.03] border border-white/10 rounded-3xl p-6 shadow-xl shadow-black/20">
 
       <h2 class="text-2xl font-black mb-5">
@@ -133,7 +131,6 @@ $mensajesError = [
 
     </section>
 
-    <!-- LISTA EQUIPOS -->
     <section class="bg-white/[0.03] border border-white/10 rounded-3xl shadow-xl shadow-black/20 overflow-hidden">
 
       <div class="px-6 py-5 border-b border-white/10 flex items-center justify-between">

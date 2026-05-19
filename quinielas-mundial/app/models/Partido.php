@@ -380,7 +380,7 @@ class Partido
                     if ($equipo === null) {
                         return [
                             'ok' => false,
-                            'mensaje' => 'Aún faltan resultados o desempates en ' . $faseActual . '.'
+                            'mensaje' => 'Aún faltan resultados en ' . $faseActual . '.'
                         ];
                     }
                 }
@@ -1002,19 +1002,16 @@ class Partido
         $sql = "
             SELECT 1
             FROM Equipo e1
-            JOIN Equipo e2
-                ON e1.codigo_grupo = e2.codigo_grupo
+            JOIN Equipo e2 ON e1.codigo_grupo = e2.codigo_grupo
             WHERE e1.pais = :pais_local
             AND e2.pais = :pais_visitante
             LIMIT 1
         ";
-
         $stmt = $this->pdo->prepare($sql);
         $stmt->execute([
             ':pais_local'     => $paisLocal,
             ':pais_visitante' => $paisVisitante
         ]);
-
         return (bool) $stmt->fetchColumn();
     }
 
@@ -1030,24 +1027,19 @@ class Partido
                 (pais_local = :visitante_b AND pais_visitante = :local_b)
             )
         ";
-
         $params = [
             ':local_a'     => $paisLocal,
             ':visitante_a' => $paisVisitante,
             ':visitante_b' => $paisVisitante,
             ':local_b'     => $paisLocal
         ];
-
         if ($codigoIgnorar !== null) {
             $sql .= " AND codigo_partido <> :codigo_ignorar";
             $params[':codigo_ignorar'] = $codigoIgnorar;
         }
-
         $sql .= " LIMIT 1";
-
         $stmt = $this->pdo->prepare($sql);
         $stmt->execute($params);
-
         return (bool) $stmt->fetchColumn();
     }
 

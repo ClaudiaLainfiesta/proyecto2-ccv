@@ -9,18 +9,12 @@ $conn = $db->conectar();
 
 $accion = $_POST['accion'] ?? '';
 
-/* =====================================================
-   REGISTRO
-===================================================== */
-
 if ($accion === 'registro') {
 
     $nombre = trim($_POST['nombre'] ?? '');
     $username = trim($_POST['usuario'] ?? '');
     $password = $_POST['password'] ?? '';
     $confirmPassword = $_POST['confirm_password'] ?? '';
-
-    /* VALIDAR CAMPOS */
 
     if ($nombre === '' || $username === '' || $password === '' || $confirmPassword === '') {
 
@@ -38,8 +32,6 @@ if ($accion === 'registro') {
         exit;
     }
 
-    /* VALIDAR SEGURIDAD DE CONTRASEÑA */
-
     if (strlen($password) < 6 || !preg_match('/\p{L}/u', $password) || !preg_match('/\d/', $password)) {
 
         $_SESSION['error'] = "La contraseña debe tener mínimo 6 caracteres, una letra y un número";
@@ -47,8 +39,6 @@ if ($accion === 'registro') {
         header("Location: ../../public/login.php?panel=registro");
         exit;
     }
-
-    /* VALIDAR SI EXISTE */
 
     $sql = "SELECT username
             FROM Usuario
@@ -68,11 +58,7 @@ if ($accion === 'registro') {
         exit;
     }
 
-    /* HASH CONTRASEÑA */
-
     $passwordHash = password_hash($password, PASSWORD_DEFAULT);
-
-    /* INSERTAR USUARIO */
 
     $sql = "INSERT INTO Usuario (
                 username,
@@ -92,35 +78,22 @@ if ($accion === 'registro') {
         ':nombre' => $nombre,
         ':contrasena' => $passwordHash
     ]);
-
-    /* =====================================================
-       CAMBIO AQUÍ: INICIAR SESIÓN AUTOMÁTICAMENTE
-    ===================================================== */
     
-    // Almacenamos los datos en la sesión para que el sistema lo reconozca logueado
     $_SESSION['usuario'] = [
         'username' => $username,
         'nombre' => $nombre
     ];
 
-    // Opcional: Mensaje de bienvenida flotante que se mostrará al entrar al index
     $_SESSION['success'] = "¡Cuenta creada con éxito! Bienvenido(a) " . htmlspecialchars($nombre);
 
-    // Redirección directa al index sin pasar por el login otra vez
     header("Location: ../../public/index.php");
     exit;
 }
-
-/* =====================================================
-   LOGIN
-===================================================== */
 
 if ($accion === 'login') {
 
     $username = trim($_POST['usuario'] ?? '');
     $password = $_POST['password'] ?? '';
-
-    /* VALIDAR CAMPOS */
 
     if ($username === '' || $password === '') {
 
@@ -129,8 +102,6 @@ if ($accion === 'login') {
         header("Location: ../../public/login.php?panel=login");
         exit;
     }
-
-    /* BUSCAR USUARIO */
 
     $sql = "SELECT *
             FROM Usuario
@@ -145,8 +116,6 @@ if ($accion === 'login') {
 
     $usuario = $stmt->fetch();
 
-    /* USUARIO NO EXISTE */
-
     if (!$usuario) {
 
         $_SESSION['error'] = "El usuario no existe";
@@ -154,8 +123,6 @@ if ($accion === 'login') {
         header("Location: ../../public/login.php?panel=login");
         exit;
     }
-
-    /* VERIFICAR PASSWORD */
 
     if (!password_verify($password, $usuario['contrasena'])) {
 
@@ -165,8 +132,6 @@ if ($accion === 'login') {
         exit;
     }
 
-    /* CREAR SESIÓN */
-
     $_SESSION['usuario'] = [
         'username' => $usuario['username'],
         'nombre' => $usuario['nombre']
@@ -175,10 +140,6 @@ if ($accion === 'login') {
     header("Location: ../../public/index.php");
     exit;
 }
-
-/* =====================================================
-   SI NO EXISTE ACCIÓN
-===================================================== */
 
 header("Location: ../../public/login.php");
 exit;

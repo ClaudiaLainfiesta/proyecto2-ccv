@@ -234,11 +234,13 @@ class PartidoController
         $estadio = trim($datos['estadio'] ?? '');
         $fecha = $datos['fecha'] ?? '';
         $hora = $datos['hora'] ?? '';
+        $nombreFase = trim($datos['nombre_fase'] ?? '');
         $paisLocal = trim($datos['pais_local'] ?? '');
         $paisVisitante = trim($datos['pais_visitante'] ?? '');
         $codigoIgnorar = $esEdicion ? $codigoPartido : null;
 
         if ($nombreFase === 'Fase de Grupos') {
+
             if (!$partidoModel->equiposSonDelMismoGrupo($paisLocal, $paisVisitante)) {
                 return 'mismo_grupo';
             }

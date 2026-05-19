@@ -178,14 +178,11 @@ if (!empty($username)) {
     }
 </style>
 
-<!-- NAVBAR PRINCIPAL -->
 <nav class="main-navbar fixed w-full bg-black/95 backdrop-blur-md text-white shadow-lg z-50 border-b border-amber-500/10">
     <div class="max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8">
         <div class="flex items-center justify-between h-16">
 
-            <!-- LOGO (Actúa como disparador del menú en móviles) -->
             <div class="flex items-center gap-3">
-                <!-- Se agregó id="btn-menu" y cursor-pointer -->
                 <button id="btn-menu"
                     class="p-1 rounded-2xl flex items-center justify-center h-11 w-11
                         shadow-lg shadow-amber-500/20 hover:scale-105 active:scale-95
@@ -193,7 +190,6 @@ if (!empty($username)) {
                     <img src="<?php echo htmlspecialchars($assetBaseUrl . '/img/copa26.jpeg?v=2'); ?>" alt="Logo Quiniela-Copa" class="h-full w-full object-contain">
                 </button>
 
-                <!-- Texto al lado del logo -->
                 <div class="hidden sm:block">
                     <a href="index.php"
                         class="font-extrabold text-lg tracking-tight whitespace-nowrap
@@ -207,7 +203,6 @@ if (!empty($username)) {
                 </div>
             </div>
 
-            <!-- ENRUTADORES ESCRITORIO (Ocultos en móviles: hidden lg:flex) -->
             <div class="hidden lg:flex items-center justify-center flex-1 space-x-1 font-medium text-sm text-white whitespace-nowrap">
                 <a href="index.php" class="<?php echo htmlspecialchars($navClass('index.php', $navDesktopClass)); ?>">Inicio</a>
 
@@ -225,7 +220,6 @@ if (!empty($username)) {
                 <?php endif; ?>
             </div>
 
-            <!-- SECCIÓN USUARIO -->
             <div class="flex items-center gap-3">
                 <form action="<?php echo htmlspecialchars($accionBusquedaNavbar); ?>" method="GET"
                     class="hidden xl:flex items-center gap-2 w-64 2xl:w-80 h-11 rounded-2xl border border-white/10 bg-white/[0.04] px-3 focus-within:border-amber-400/70">
@@ -284,24 +278,16 @@ if (!empty($username)) {
     </div>
 </div>
 
-<!-- ========================================== -->
-<!-- MENÚ LATERAL MÓVIL (SIDEBAR) & OVERLAY     -->
-<!-- ========================================== -->
-
-<!-- Fondo oscuro (Overlay) -->
 <div id="sidebar-overlay" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 hidden opacity-0 transition-opacity duration-300"></div>
 
-<!-- Contenedor del Menú Lateral Izquierdo -->
 <div id="sidebar-menu" class="fixed top-0 left-0 bottom-0 w-72 bg-slate-950 border-r border-amber-500/20 z-50 transform -translate-x-full transition-transform duration-300 ease-in-out flex flex-col justify-between">
     
     <div>
-        <!-- Encabezado del Menú Lateral -->
         <div class="p-5 flex items-center justify-between border-b border-white/5">
             <div class="flex flex-col">
                 <span class="font-extrabold text-md bg-gradient-to-r from-yellow-600 via-amber-400 to-yellow-500 bg-clip-text text-transparent">Quiniela Mundial 2026</span>
                 <span class="text-[10px] text-slate-500 tracking-widest font-bold uppercase">Navegación</span>
             </div>
-            <!-- Botón para cerrar menú -->
             <button id="btn-close-menu" class="text-slate-400 hover:text-white p-1 rounded-xl hover:bg-white/5 transition-all">
                 <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
@@ -309,7 +295,6 @@ if (!empty($username)) {
             </button>
         </div>
 
-        <!-- Buscador móvil/lateral -->
         <form action="<?php echo htmlspecialchars($accionBusquedaNavbar); ?>" method="GET"
             class="mx-4 mt-4 flex h-11 items-center gap-2 rounded-2xl border border-white/10 bg-white/[0.04] px-3 focus-within:border-amber-400/70">
             <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 shrink-0 text-slate-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
@@ -332,7 +317,6 @@ if (!empty($username)) {
             </button>
         </form>
 
-        <!-- Links de navegación móvil -->
         <div class="p-4 flex flex-col space-y-1 font-medium text-sm">
             <a href="index.php" class="<?php echo htmlspecialchars($navClass('index.php', $navSidebarClass . ' flex items-center gap-3')); ?>">
                 <span>Inicio</span>
@@ -354,7 +338,6 @@ if (!empty($username)) {
         </div>
     </div>
 
-    <!-- Info del usuario en la parte inferior del menú lateral (Vista Móvil) -->
     <div class="p-4 border-t border-white/5 bg-black/40 sm:hidden">
         <div class="flex items-center justify-between">
             <div class="flex flex-col">
@@ -369,7 +352,6 @@ if (!empty($username)) {
     </div>
 </div>
 
-<!-- MODAL CONFIRMAR CIERRE DE SESIÓN -->
 <div id="logout-modal" class="fixed inset-0 z-[60] hidden items-center justify-center bg-black/70 backdrop-blur-sm px-4">
     <div class="w-full max-w-sm rounded-2xl border border-amber-500/25 bg-slate-950 p-6 text-white shadow-2xl shadow-black/40">
         <div class="mb-5 flex items-center gap-3">
@@ -399,7 +381,6 @@ if (!empty($username)) {
     </div>
 </div>
 
-<!-- LÓGICA DE JAVASCRIPT PARA PASAR EL MENÚ -->
 <script>
     document.addEventListener('DOMContentLoaded', () => {
         const btnMenu = document.getElementById('btn-menu');
@@ -413,9 +394,7 @@ if (!empty($username)) {
         let logoutUrl = 'logout.php';
 
         function openMenu() {
-            // Solo actuar si estamos en pantallas móviles (opcional, pero buena práctica)
             sidebarOverlay.classList.remove('hidden');
-            // Timeout pequeño para permitir la animación CSS de opacidad
             setTimeout(() => {
                 sidebarOverlay.classList.remove('opacity-0');
                 sidebarMenu.classList.remove('-translate-x-full');
@@ -427,14 +406,11 @@ if (!empty($username)) {
             sidebarMenu.classList.remove('translate-x-0');
             sidebarMenu.classList.add('-translate-x-full');
             sidebarOverlay.classList.add('opacity-0');
-            
-            // Esperar a que termine la animación antes de ocultar por completo
             setTimeout(() => {
                 sidebarOverlay.classList.add('hidden');
             }, 300);
         }
 
-        // Eventos
         btnMenu.addEventListener('click', openMenu);
         btnCloseMenu.addEventListener('click', closeMenu);
         sidebarOverlay.addEventListener('click', closeMenu);

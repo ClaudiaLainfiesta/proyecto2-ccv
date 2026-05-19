@@ -9,7 +9,6 @@ $esAdminFooter = esAdmin();
 
     <div class="grid grid-cols-1 md:grid-cols-3 gap-10">
 
-      <!-- BRAND -->
       <div class="flex items-center gap-3">
                 <a href="index.php"
                     class="p-1 rounded-2xl flex items-center justify-center h-11 w-11
@@ -18,7 +17,6 @@ $esAdminFooter = esAdmin();
                     <img src="assets/img/copa26.jpeg" alt="Logo Quiniela-Copa" class="h-full w-full object-contain">
                 </a>
 
-                <!-- Texto al lado del logo -->
                 <div class="hidden sm:block">
                     <a href="index.php"
                         class="font-extrabold text-lg tracking-tight
@@ -33,7 +31,6 @@ $esAdminFooter = esAdmin();
                 </div>
             </div>
 
-      <!-- NAVEGACIÓN -->
       <div>
 
         <h4 class="text-sm font-black uppercase tracking-widest text-amber-400">
@@ -76,7 +73,6 @@ $esAdminFooter = esAdmin();
 
       </div>
 
-      <!-- INFO -->
       <div>
 
         <h4 class="text-sm font-black uppercase tracking-widest text-amber-400">
@@ -101,7 +97,6 @@ $esAdminFooter = esAdmin();
 
     </div>
 
-    <!-- BOTTOM -->
     <div class="mt-10 pt-6 border-t border-white/10 flex flex-col md:flex-row items-center justify-between gap-4">
 
       <p class="text-xs text-slate-500 text-center md:text-left">

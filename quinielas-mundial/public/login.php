@@ -27,7 +27,6 @@ if (isset($_SESSION['usuario'])) {
         </div>
     </div>
 
-    <!-- ALERTAS DE ERROR -->
     <?php if (isset($_SESSION['error'])): ?>
         <div id="alertaError"
             class="fixed top-5 left-1/2 -translate-x-1/2 z-50
@@ -40,12 +39,6 @@ if (isset($_SESSION['usuario'])) {
         <?php unset($_SESSION['error']); ?>
     <?php endif; ?>
 
-    <!-- 
-      NOTA: El bloque de $_SESSION['success'] fue removido de aquí. 
-      Debes ponerlo en tu index.php para que muestre el mensaje de bienvenida 
-      al iniciar sesión automáticamente.
-    -->
-
     <div class="login-shell relative z-10 w-full max-w-[880px] min-h-[560px] bg-white rounded-[30px] overflow-hidden shadow-2xl">
 
         <input
@@ -54,10 +47,8 @@ if (isset($_SESSION['usuario'])) {
             class="peer hidden"
             <?= (isset($_GET['panel']) && $_GET['panel'] === 'registro') ? 'checked' : '' ?>>
 
-        <!-- GRID PRINCIPAL -->
         <div class="login-grid grid grid-cols-2 min-h-[560px]">
 
-            <!-- REGISTRO (Se le añadió id="form-registro") -->
             <div class="register-panel flex items-center justify-center px-8 sm:px-10 lg:px-14 py-10">
                 <form id="form-registro" action="../app/controllers/UsuarioController.php"
                     method="POST"
@@ -81,7 +72,6 @@ if (isset($_SESSION['usuario'])) {
                             class="w-full px-4 py-3 rounded-xl bg-gray-100 outline-none focus:ring-2 focus:ring-yellow-500">
                     </div>
 
-                    <!-- CONTRASEÑA -->
                     <div>
                         <label class="block text-sm font-semibold text-gray-600 mb-2">
                             Contraseña
@@ -115,7 +105,6 @@ if (isset($_SESSION['usuario'])) {
                         </div>
                     </div>
 
-                    <!-- REPETIR CONTRASEÑA -->
                     <div>
                         <label class="block text-sm font-semibold text-gray-600 mb-2">
                             Repetir contraseña
@@ -166,7 +155,6 @@ if (isset($_SESSION['usuario'])) {
                 </form>
             </div>
 
-            <!-- LOGIN -->
             <div class="login-panel flex items-center justify-center px-8 sm:px-10 lg:px-14 py-10">
                 <form action="../app/controllers/UsuarioController.php"
                     method="POST"
@@ -225,7 +213,6 @@ if (isset($_SESSION['usuario'])) {
             </div>
         </div>
 
-        <!-- PANEL ANIMADO -->
         <div class="login-hero-panel absolute top-0 left-0 w-1/2 h-full !bg-black rounded-r-[30px]
         flex flex-col items-center justify-center gap-8 px-10 text-center text-white
         transition-all duration-700
@@ -317,7 +304,6 @@ if (isset($_SESSION['usuario'])) {
             }
         }
 
-        /* CAMBIO AQUÍ: Ahora se selecciona de forma segura por ID */
         const registerForm = document.getElementById('form-registro');
 
         const passwordInput = document.getElementById('registerPassword');
