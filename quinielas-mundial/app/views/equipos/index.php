@@ -11,7 +11,8 @@ $mensajesError = [
   'imagen_tipo' => 'La bandera debe ser una imagen PNG, JPG o WebP.',
   'referencia' => 'El grupo seleccionado no existe.',
   'relacionado' => 'No se pudo eliminar el equipo porque tiene partidos o datos relacionados.',
-  'bd' => 'No se pudo guardar el equipo. Revisa los datos e intenta de nuevo.'
+  'bd' => 'No se pudo guardar el equipo. Revisa los datos e intenta de nuevo.',
+  'grupo_lleno' => 'El grupo seleccionado ya tiene 4 equipos. Cada grupo admite exactamente 4 países.'
 ];
 ?>
 
@@ -140,15 +141,9 @@ $mensajesError = [
           <h2 class="text-2xl font-black">
             Equipos registrados
           </h2>
-
-          <p class="text-sm text-slate-400 mt-1">
-            Editá país o grupo de cada equipo.
-          </p>
         </div>
 
         <div class="hidden sm:flex items-center gap-2 bg-amber-500/10 border border-amber-500/30 px-4 py-2 rounded-xl">
-          <span class="h-2 w-2 rounded-full bg-amber-400"></span>
-
           <span class="text-sm font-bold text-amber-400">
             <?php echo count($equipos ?? []); ?> equipos
           </span>

@@ -215,13 +215,13 @@ if (!empty($username)) {
                     <a href="equipos.php" class="<?php echo htmlspecialchars($navClass('equipos.php', $navDesktopAdminClass)); ?>">Equipos</a>
                     <a href="partidos.php" class="<?php echo htmlspecialchars($navClass('partidos.php', $navDesktopAdminClass)); ?>">Partidos</a>
                     <a href="resultados.php" class="<?php echo htmlspecialchars($navClass('resultados.php', $navDesktopAdminClass)); ?>">Resultados</a>
-                    <a href="llaves.php" class="<?php echo htmlspecialchars($navClass('llaves.php', $navDesktopAdminClass)); ?>">Llaves</a>
+                    <a href="llaves.php" class="<?php echo htmlspecialchars($navClass('llaves.php', $navDesktopAdminClass)); ?>">Bracket</a>
                 <?php else: ?>
                     <a href="calendario.php" class="<?php echo htmlspecialchars($navClass('calendario.php', $navDesktopClass)); ?>">Calendario</a>
                     <a href="predicciones.php" class="<?php echo htmlspecialchars($navClass('predicciones.php', $navDesktopClass)); ?>">Mis Predicciones</a>
-                    <a href="llaves.php" class="<?php echo htmlspecialchars($navClass('llaves.php', $navDesktopClass)); ?>">Llaves</a>
-                    <a href="posiciones.php" class="<?php echo htmlspecialchars($navClass('posiciones.php', $navDesktopClass)); ?>">Posiciones</a>
                     <a href="ranking.php" class="<?php echo htmlspecialchars($navClass('ranking.php', $navDesktopClass)); ?>">Ranking</a>
+                    <a href="posiciones.php" class="<?php echo htmlspecialchars($navClass('posiciones.php', $navDesktopClass)); ?>">Posiciones</a>
+                    <a href="llaves.php" class="<?php echo htmlspecialchars($navClass('llaves.php', $navDesktopClass)); ?>">Bracket</a>
                 <?php endif; ?>
             </div>
 

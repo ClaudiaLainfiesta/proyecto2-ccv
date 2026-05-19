@@ -29,3 +29,13 @@ function sqlPuedeVaticinar($alias = 'p') {
         END
     ";
 }
+
+function partidoPuedeRecibirResultado($fecha, $hora) {
+    $fechaHoraPartido = strtotime(trim($fecha . ' ' . $hora));
+
+    if ($fechaHoraPartido === false) {
+        return false;
+    }
+
+    return time() >= $fechaHoraPartido;
+}

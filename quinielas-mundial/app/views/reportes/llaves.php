@@ -267,8 +267,8 @@ if ($campeon !== null && !empty($final)) {
     <section class="mb-8">
       <p class="text-amber-400 font-semibold text-sm uppercase tracking-[0.25em]">Eliminatorias</p>
       <h1 class="mt-3 text-4xl md:text-5xl font-black tracking-tight">
-        Cuadro de
-        <span class="bg-gradient-to-r from-yellow-600 via-amber-400 to-yellow-500 bg-clip-text text-transparent">llaves</span>
+        Mundial 2026
+        <span class="bg-gradient-to-r from-yellow-600 via-amber-400 to-yellow-500 bg-clip-text text-transparent">Bracket</span>
       </h1>
     </section>
     <section class="bracket-shell overflow-hidden">
@@ -276,10 +276,6 @@ if ($campeon !== null && !empty($final)) {
         <div>
           <h2 class="text-2xl font-black">Camino a la final</h2>
           
-        </div>
-        <div class="bracket-count inline-flex w-fit items-center gap-2 px-4 py-2 text-sm font-bold">
-          <span class="h-2 w-2 rounded-full bg-amber-400"></span>
-          <?php echo count($partidosLlaves); ?> partidos en eliminatorias
         </div>
       </div>
       <div class="bracket-scroll overflow-x-auto scroll-x-soft p-5">
@@ -339,7 +335,10 @@ if ($campeon !== null && !empty($final)) {
       </div>
     </section>
   </main>
-  <?php require_once __DIR__ . '/../layouts/footer.php'; ?>
+
+  <?php if (!$esAdmin): ?>
+    <?php require_once __DIR__ . '/../layouts/footer.php'; ?>
+  <?php endif; ?>
 
   <script>
   (function(){

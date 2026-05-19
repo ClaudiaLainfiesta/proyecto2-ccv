@@ -39,7 +39,8 @@
           'partido' => 'No se encontró el partido seleccionado.',
           'goles' => 'Los goles oficiales deben ser números enteros mayores o iguales a cero.',
           'empate' => 'Los empates oficiales solo están permitidos en Fase de Grupos.',
-          'bd' => 'No se pudo actualizar el resultado. Revisa los datos e intenta de nuevo.'
+          'bd' => 'No se pudo actualizar el resultado. Revisa los datos e intenta de nuevo.',
+          'tiempo'   => 'No se puede ingresar el resultado antes de la fecha y hora programada del partido.'
         ];
         $mensajeError = $mensajesError[$_GET['error']] ?? 'No se pudo actualizar el resultado. Revisa los datos.';
       ?>
@@ -59,13 +60,9 @@
       <div class="px-6 py-5 border-b border-white/10 flex items-center justify-between">
         <div>
           <h2 class="text-2xl font-black">Partidos registrados</h2>
-          <p class="text-sm text-slate-400 mt-1">
-            Ingresa o quita resultados oficiales sin mover la página horizontalmente.
-          </p>
         </div>
 
         <div class="hidden sm:flex items-center gap-2 bg-amber-500/10 border border-amber-500/30 px-4 py-2 rounded-xl">
-          <span class="h-2 w-2 rounded-full bg-amber-400"></span>
           <span class="text-sm font-bold text-amber-400">
             <?php echo count($partidos ?? []); ?> partidos
           </span>

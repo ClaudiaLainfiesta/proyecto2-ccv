@@ -32,6 +32,11 @@ class EquipoController
             exit;
         }
 
+        if ($equipoModel->contarEquiposEnGrupo($codigoGrupo) >= 4) {
+            header("Location: equipos.php?error=grupo_lleno");
+            exit;
+        }
+
         $bandera = $this->leerBanderaSubida();
 
         if (!$bandera['ok']) {
@@ -64,6 +69,11 @@ class EquipoController
 
         if (strcasecmp($paisOriginal, $pais) !== 0 && $equipoModel->existeEquipo($pais)) {
             header("Location: equipos.php?error=duplicado");
+            exit;
+        }
+
+        if ($equipoModel->contarEquiposEnGrupo($codigoGrupo, $paisOriginal) >= 4) {
+            header("Location: equipos.php?error=grupo_lleno");
             exit;
         }
 

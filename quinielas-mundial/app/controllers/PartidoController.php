@@ -32,6 +32,13 @@ class PartidoController
 
         $partidoModel = new Partido();
 
+        $fechaHora = $partidoModel->obtenerFechaHoraPartido($codigoPartido);
+
+        if (!$fechaHora || !partidoPuedeRecibirResultado($fechaHora['fecha'], $fechaHora['hora'])) {
+            header("Location: resultados.php?error=tiempo" . $queryFase);
+            exit;
+        }
+
         if ($accion === 'quitar') {
             $partidoModel->quitarResultado($codigoPartido);
             $partidoModel->reiniciarPuntosPartido($codigoPartido);
@@ -230,6 +237,16 @@ class PartidoController
         $paisLocal = trim($datos['pais_local'] ?? '');
         $paisVisitante = trim($datos['pais_visitante'] ?? '');
         $codigoIgnorar = $esEdicion ? $codigoPartido : null;
+
+        if ($nombreFase === 'Fase de Grupos') {
+            if (!$partidoModel->equiposSonDelMismoGrupo($paisLocal, $paisVisitante)) {
+                return 'mismo_grupo';
+            }
+
+            if ($partidoModel->yaJugaronEnFaseGrupos($paisLocal, $paisVisitante, $codigoIgnorar)) {
+                return 'ya_jugaron';
+            }
+        }
 
         if ($partidoModel->existePartidoEnEstadioFecha($estadio, $fecha, $codigoIgnorar)) {
             return 'estadio_fecha';

@@ -56,6 +56,27 @@ class Equipo {
         return (bool) $stmt->fetchColumn();
     }
 
+    public function contarEquiposEnGrupo($codigoGrupo, $paisIgnorar = null)
+    {
+        $sql = "
+            SELECT COUNT(*)
+            FROM Equipo
+            WHERE codigo_grupo = :codigo_grupo
+        ";
+
+        $params = [':codigo_grupo' => $codigoGrupo];
+
+        if ($paisIgnorar !== null) {
+            $sql .= " AND pais <> :pais_ignorar";
+            $params[':pais_ignorar'] = $paisIgnorar;
+        }
+
+        $stmt = $this->pdo->prepare($sql);
+        $stmt->execute($params);
+
+        return (int) $stmt->fetchColumn();
+    }
+
     public function crearEquipo($pais, $codigoGrupo, $banderaHex = null) {
         $banderaHex = $banderaHex ?? '00';
 

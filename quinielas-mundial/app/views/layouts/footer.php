@@ -52,16 +52,24 @@ $esAdminFooter = esAdmin();
             Calendario
           </a>
 
-          <?php if (!$esAdminFooter): ?>
-            <a href="predicciones.php"
-               class="text-slate-400 hover:text-amber-400 transition-colors">
-              Mis Predicciones
-            </a>
-          <?php endif; ?>
+          <a href="predicciones.php"
+              class="text-slate-400 hover:text-amber-400 transition-colors">
+            Mis Predicciones
+          </a>
 
           <a href="ranking.php"
              class="text-slate-400 hover:text-amber-400 transition-colors">
             Ranking
+          </a>
+
+          <a href="posiciones.php"
+             class="text-slate-400 hover:text-amber-400 transition-colors">
+            Posiciones
+          </a>
+
+          <a href="llaves.php"
+             class="text-slate-400 hover:text-amber-400 transition-colors">
+            Bracket
           </a>
 
         </div>

@@ -14,7 +14,9 @@ $mensajesError = [
   'equipo_horario' => 'Uno de los equipos ya tiene un partido programado en esa fecha y hora.',
   'referencia' => 'La fase o alguno de los equipos seleccionados no existe.',
   'relacionado' => 'No se pudo eliminar el partido porque tiene datos relacionados.',
-  'bd' => 'No se pudo guardar el partido. Revisa los datos e intenta de nuevo.'
+  'bd' => 'No se pudo guardar el partido. Revisa los datos e intenta de nuevo.',
+  'mismo_grupo' => 'En Fase de Grupos, ambos equipos deben pertenecer al mismo grupo.',
+  'ya_jugaron'  => 'Este par de equipos ya tiene un partido registrado en Fase de Grupos.'
 ];
 ?>
 <!DOCTYPE html>
@@ -75,10 +77,6 @@ $mensajesError = [
           Generar dieciseisavos
         </h2>
 
-        <p class="mt-2 text-sm text-slate-400">
-          Usa las posiciones de grupo y el calendario oficial de partidos 73 al 88.
-        </p>
-
         <button type="submit"
                 class="mt-5 px-5 py-3 rounded-xl bg-gradient-to-r from-yellow-600 via-amber-500 to-yellow-500 text-slate-950 font-black shadow-lg shadow-amber-500/20 hover:scale-105 active:scale-95 transition-all">
           Generar
@@ -95,10 +93,6 @@ $mensajesError = [
         <h2 class="mt-2 text-2xl font-black text-white">
           Generar siguiente fase
         </h2>
-
-        <p class="mt-2 text-sm text-slate-400">
-          Toma los ganadores según las llaves oficiales hasta la final.
-        </p>
 
         <button type="submit"
                 class="mt-5 px-5 py-3 rounded-xl bg-white/5 border border-white/10 text-white font-black hover:bg-white/10 transition-all">

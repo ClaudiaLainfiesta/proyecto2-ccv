@@ -191,6 +191,21 @@ class Partido
         return $fase !== false ? $fase : null;
     }
 
+    public function obtenerFechaHoraPartido($codigoPartido)
+    {
+        $sql = "
+            SELECT fecha, hora
+            FROM Partido
+            WHERE codigo_partido = :codigo_partido
+        ";
+
+        $stmt = $this->pdo->prepare($sql);
+        $stmt->execute([':codigo_partido' => $codigoPartido]);
+        $fila = $stmt->fetch();
+
+        return $fila ?: null;
+    }
+
     public function crearFasesEliminatorias()
     {
         $fases = [
@@ -967,6 +982,60 @@ class Partido
             ':pais_visitante_b' => $paisVisitante,
             ':fecha' => $fecha,
             ':hora' => $hora
+        ];
+
+        if ($codigoIgnorar !== null) {
+            $sql .= " AND codigo_partido <> :codigo_ignorar";
+            $params[':codigo_ignorar'] = $codigoIgnorar;
+        }
+
+        $sql .= " LIMIT 1";
+
+        $stmt = $this->pdo->prepare($sql);
+        $stmt->execute($params);
+
+        return (bool) $stmt->fetchColumn();
+    }
+
+    public function equiposSonDelMismoGrupo($paisLocal, $paisVisitante)
+    {
+        $sql = "
+            SELECT 1
+            FROM Equipo e1
+            JOIN Equipo e2
+                ON e1.codigo_grupo = e2.codigo_grupo
+            WHERE e1.pais = :pais_local
+            AND e2.pais = :pais_visitante
+            LIMIT 1
+        ";
+
+        $stmt = $this->pdo->prepare($sql);
+        $stmt->execute([
+            ':pais_local'     => $paisLocal,
+            ':pais_visitante' => $paisVisitante
+        ]);
+
+        return (bool) $stmt->fetchColumn();
+    }
+
+    public function yaJugaronEnFaseGrupos($paisLocal, $paisVisitante, $codigoIgnorar = null)
+    {
+        $sql = "
+            SELECT 1
+            FROM Partido
+            WHERE nombre_fase = 'Fase de Grupos'
+            AND (
+                (pais_local = :local_a AND pais_visitante = :visitante_a)
+                OR
+                (pais_local = :visitante_b AND pais_visitante = :local_b)
+            )
+        ";
+
+        $params = [
+            ':local_a'     => $paisLocal,
+            ':visitante_a' => $paisVisitante,
+            ':visitante_b' => $paisVisitante,
+            ':local_b'     => $paisLocal
         ];
 
         if ($codigoIgnorar !== null) {

@@ -1,0 +1,1 @@
+Para más información, leer el manual de usuario
